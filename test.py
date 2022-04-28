@@ -48,7 +48,7 @@ images = images.to(device)
 # prediction
 pred = model(images)
 
-pred_sigmoid = torch.sigmoid(pred).to(device)
+pred_sigmoid = torch.sigmoid(pred).cpu()
 print(pred_sigmoid)
 pred_rounded = np.round(pred_sigmoid)
 print(pred_rounded)
