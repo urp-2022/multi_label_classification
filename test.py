@@ -7,12 +7,14 @@ from PIL import Image
 from datasets.loader import VOC
 
 
-if torch.cuda.is_available():
-    device = 'cuda'
-    torch.set_default_tensor_type('torch.cuda.FloatTensor')
-else:
-    device = 'cpu'
-    torch.set_default_tensor_type('torch.FloatTensor')
+# if torch.cuda.is_available():
+#     device = 'cuda'
+#     torch.set_default_tensor_type('torch.cuda.FloatTensor')
+# else:
+#     device = 'cpu'
+#     torch.set_default_tensor_type('torch.FloatTensor')
+ctx = "cuda" if torch.cuda.is_available() else "cpu"
+device = torch.device(ctx)
 
 VOC_CLASSES = (
     'aeroplane', 'bicycle', 'bird', 'boat',
