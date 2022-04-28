@@ -50,3 +50,4 @@ images = images.to(device)
 pred = model(images)
 
 print(VOC_CLASSES[pred.argmax()])
+print(pred)
