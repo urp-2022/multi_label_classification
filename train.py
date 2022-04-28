@@ -19,12 +19,6 @@ MODEL_PATH = 'model.h5'
 BATCH_SIZE = 16
 EPOCH = 40
 
-# if torch.cuda.is_available():
-#     device = 'cuda'
-#     # torch.set_default_tensor_type('torch.cuda.FloatTensor')
-# else:
-#     device = 'cpu'
-#     # torch.set_default_tensor_type('torch.FloatTensor')
 ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
