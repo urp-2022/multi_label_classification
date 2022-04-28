@@ -49,6 +49,7 @@ images = test_transformer(Image.open('cat.jpg')).view(1, 3, 224, 224)
 images = images.to(device)
 
 # prediction
+model=model.to(device)
 pred = model(images)
 
 print(VOC_CLASSES[pred.argmax()])
