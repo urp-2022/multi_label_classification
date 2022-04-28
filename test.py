@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torchvision.transforms as transforms
+import numpy as np
 
 from PIL import Image
 from datasets.loader import VOC
@@ -52,6 +53,11 @@ images = images.to(device)
 
 # prediction
 pred = model(images)
+
+pred_sigmoid = torch.sigmoid(pred).to(device)
+print(pred_sigmoid)
+pred_rounded = np.round(pred_sigmoid)
+print(pred_rounded)
 
 print(VOC_CLASSES[pred.argmax()])
 print(pred)
