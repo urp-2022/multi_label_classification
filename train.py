@@ -72,7 +72,9 @@ for e in range(EPOCH):
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
         # images = images.cuda()
+        print(targets)
         targets = targets.to(device)
+        print(targets)
         # targets = targets.cuda()
         optimizer.zero_grad()
         # forward
