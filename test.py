@@ -43,6 +43,7 @@ model.classifier[6] = nn.Linear(4096, 20)
 model.load_state_dict(torch.load(MODEL_PATH))
 
 # model eval
+model = model.to(device)
 model = model.eval()
 
 # tensor image generate
