@@ -2,17 +2,11 @@ import torch
 import torch.nn as nn
 from torchvision import models
 import torchvision.transforms as transforms
+import numpy as np
 
 from PIL import Image
 from datasets.loader import VOC
 
-
-# if torch.cuda.is_available():
-#     device = 'cuda'
-#     torch.set_default_tensor_type('torch.cuda.FloatTensor')
-# else:
-#     device = 'cpu'
-#     torch.set_default_tensor_type('torch.FloatTensor')
 ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
@@ -24,7 +18,7 @@ VOC_CLASSES = (
     'sheep', 'sofa', 'train', 'tvmonitor'
 )
 
-MODEL_PATH = 'model.h5'
+MODEL_PATH = '/content/drive/MyDrive/URP/models/model.h5'
 BATCH_SIZE = 32
 
 # test dataset
@@ -51,5 +45,47 @@ images = images.to(device)
 # prediction
 model=model.to(device)
 pred = model(images)
+pred_sigmoid = torch.sigmoid(pred)
+pred_rounded = torch.round(pred_sigmoid)
+tmp=pred_rounded.cpu().detach().numpy()[0]
 
-print(VOC_CLASSES[pred.argmax()])
+for i in range(20):
+  if tmp[i]==1:
+    print(VOC_CLASSES[i]) 
+
+  
+#Accuracy===================================
+'''
+correct = 0
+total = 0
+with torch.no_grad():
+    for images, labels in test_loader:
+        images = images.to(device)
+        outputs = model(images)
+        outputs = torch.sigmoid(outputs).cpu()
+        predicted = torch.round(outputs)
+        total += labels.size(1)*32
+        correct += (predicted==labels).sum().item()
+        # print(correct)
+
+accuracy = 100*correct/total
+print("Accuracy: {}%".format(accuracy))'''
+
+#mAP============================
+from sklearn.metrics import average_precision_score, precision_recall_curve
+np.seterr(invalid='ignore')
+
+ap=np.empty((0,20), float)
+
+with torch.no_grad():
+    for images, labels in test_loader:
+        images = images.to(device)
+        outputs = model(images)
+        outputs = torch.sigmoid(outputs).cpu()
+        a = average_precision_score(labels_np, outputs_np, average=None)
+        ap = np.append(ap, [a], axis=0)
+        #print(a)
+
+print("\nMAP=\n")
+mAP=ap.mean(axis=0)
+print(mAP)
