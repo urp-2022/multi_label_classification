@@ -41,17 +41,39 @@ model.load_state_dict(torch.load(MODEL_PATH))
 model = model.to(device)
 model = model.eval()
 
-# tensor image generate
-images = test_transformer(Image.open('cat.jpg')).view(1, 3, 224, 224)
-images = images.to(device)
+# # tensor image generate
+# images = test_transformer(Image.open('cat.jpg')).view(1, 3, 224, 224)
+# images = images.to(device)
 
-# prediction
-pred = model(images)
+# # prediction
+# pred = model(images)
 
-pred_sigmoid = torch.sigmoid(pred).cpu()
-print(pred_sigmoid)
-pred_rounded = np.round(pred_sigmoid)
-print(pred_rounded)
+# pred_sigmoid = torch.sigmoid(pred).cpu()
+# print(pred_sigmoid)
+# pred_rounded = np.round(pred_sigmoid)
+# print(pred_rounded)
 
-print(VOC_CLASSES[pred.argmax()])
-print(pred)
+# print(VOC_CLASSES[pred.argmax()])
+# print(pred)
+
+correct = 0
+total = 0
+with torch.no_grad():
+    for images, labels in test_loader:
+        images = images.to(device)
+        outputs = model(images)
+        outputs = torch.sigmoid(outputs).cpu()
+        predicted = torch.round(outputs)
+        total += labels.size(0)*labels.size(1)
+        # print(labels.size(1))
+        print(predicted.size())
+        print(predicted)
+        print("   ")
+        print(labels.size())
+        print(labels)
+        correct += (predicted==labels).sum().item()
+        print(correct)
+
+accuracy = 100*correct/total
+print("Accuracy: {}%".format(accuracy))
+
