@@ -61,6 +61,11 @@ class MultiLabelClassficationTrainer():
             train_loss = 0
             valid_loss = 0
 
+            correct_train = 0
+            total_train = 0
+            correct_valid = 0
+            total_valid = 0
+
             scheduler.step()
 
             for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
@@ -70,6 +75,10 @@ class MultiLabelClassficationTrainer():
                 # forward
                 self.model = self.model.to(self.device)
                 pred = self.model(images)
+                #accuracy
+                predicted = torch.sigmoid(pred).cpu()
+                total_train += targets.size(0)*targets.size(1)
+                correct_train += (predicted==targets).sum().item()          
                 # loss
                 loss = criterion_train(pred.double(), targets)
                 loss = loss*class_weight
@@ -81,20 +90,27 @@ class MultiLabelClassficationTrainer():
                 optimizer.step()
 
             total_train_loss = train_loss / train_iter
+            train_acc = correct_train/total_train
 
             with torch.no_grad():
                 for images, targets in valid_loader:
                     images = images.to(self.device)
                     targets = targets.to(self.device)
                     pred = self.model(images)
+                    #accuracy
+                    predicted = torch.sigmoid(pred).cpu()
+                    total_valid += targets.size(0)*targets.size(1)
+                    correct_valid += (predicted==targets).sum().item()          
                     # loss
                     loss = criterion_valid(pred.double(), targets)
                     valid_loss += loss.item()
 
             total_valid_loss = valid_loss / valid_iter
+            valid_acc = correct_valid/total_valid
 
-            print("epoch : " + str(e))
-            print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
+            print("[ epoch {0} ]".format(e))
+            print("[train loss / %f] [train acc / %f]" % (total_train_loss, train_acc))
+            print("[valid loss / %f] [valid acc / %f]" % (total_valid_loss, valid_acc))
 
             if best_loss > total_valid_loss:
                 print("model saved")
