@@ -4,7 +4,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from torchvision import models
+import models
+from models import vgg16
+# from torchvision import models
 import torchvision.transforms as transforms
 from datasets.loader import VOC
 

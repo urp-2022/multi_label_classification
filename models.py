@@ -100,7 +100,7 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
     return model
 
 
-def vgg16(pretrained=True, progress=True, **kwargs):
+def vgg16(pretrained=False, progress=True, **kwargs):
     r"""VGG 16-layer model (configuration "D")
     `"Very Deep Convolutional Networks For Large-Scale Image Recognition" <https://arxiv.org/pdf/1409.1556.pdf>`_
 
@@ -109,15 +109,3 @@ def vgg16(pretrained=True, progress=True, **kwargs):
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     return _vgg('vgg16', 'D', False, pretrained, progress, **kwargs)
-
-
-
-def vgg16_bn(pretrained=False, progress=True, **kwargs):
-    r"""VGG 16-layer model (configuration "D") with batch normalization
-    `"Very Deep Convolutional Networks For Large-Scale Image Recognition" <https://arxiv.org/pdf/1409.1556.pdf>`_
-
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-        progress (bool): If True, displays a progress bar of the download to stderr
-    """
-    return _vgg('vgg16_bn', 'D', True, pretrained, progress, **kwargs)
