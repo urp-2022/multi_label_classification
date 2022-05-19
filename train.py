@@ -62,6 +62,8 @@ best_loss = 100
 train_iter = len(train_loader)
 valid_iter = len(valid_loader)
 
+model = model.to(device)
+
 for e in range(EPOCH):
     train_loss = 0
     valid_loss = 0
@@ -69,46 +71,44 @@ for e in range(EPOCH):
     scheduler.step()
 
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
+        total_train_loss = []
         images = images.to(device)
-        # images = images.cuda()
-        targets = targets.to(device)
-        # targets = targets.cuda()
-        optimizer.zero_grad()
-        # forward
-        model = model.to(device)
-        pred = model(images)
-        # pred = model(images).cuda()
-        # loss
-        loss = criterion(pred.double(), targets)
-        train_loss += loss.item()
-        # backward
-        loss.backward(retain_graph=True)
-        # weight update
-        optimizer.step()
-
-    total_train_loss = train_loss / train_iter
-
-    with torch.no_grad():
-        for images, targets in valid_loader:
-            images = images.to(device)
-            # images = images.cuda()
-            targets = targets.to(device)
-            # targets = targets.cuda()
-
-            pred = model(images)
-            # pred = model(images).cuda()
+        # targets = targets.to(device)
+        for i in range(0, 20):
+            class_targets = targets[i]
+            class_targets = class_targets.to(device)            
+            optimizer.zero_grad()
+            # forward
+            pred = model(images, i)
             # loss
             loss = criterion(pred.double(), targets)
-            valid_loss += loss.item()
+            train_loss += loss.item()
+            # backward
+            loss.backward(retain_graph=True)
+            # weight update
+            optimizer.step()
+            total_train_loss.append(train_loss / train_iter)
 
-    total_valid_loss = valid_loss / valid_iter
 
-    print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
+    # with torch.no_grad():
+    #     for images, targets in valid_loader:
+    #         images = images.to(device)
+    #         for i in range(0, 20):
 
-    if best_loss > total_valid_loss:
-        print("model saved")
-        torch.save(model.state_dict(), 'model.h5')
-        best_loss = total_valid_loss
+    #         targets = targets.to(device)
+    #         pred = model(images)
+    #         # loss
+    #         loss = criterion(pred.double(), targets)
+    #         valid_loss += loss.item()
+
+    # total_valid_loss = valid_loss / valid_iter
+
+    # print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
+
+    # if best_loss > total_valid_loss:
+    #     print("model saved")
+    #     torch.save(model.state_dict(), 'model.h5')
+    #     best_loss = total_valid_loss
 
 """
 from utils import save_tensor_image
