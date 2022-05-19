@@ -28,9 +28,9 @@ class VGG(nn.Module):
         #     nn.Dropout(),
         #     nn.Linear(4096, num_classes),
         # )
-        self.classifiers = []
+        self.classifier = []
         for i in range(20):
-            self.classifiers.append(nn.Sequential(
+            self.classifier.append(nn.Sequential(
                 nn.Linear(512 * 7 * 7, 4096),
                 nn.ReLU(True),
                 nn.Dropout(),
@@ -48,7 +48,7 @@ class VGG(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         # x = self.classifier(x)
-        x = self.classifiers[idx](x)
+        x = self.classifier[idx](x)
         return x
 
     def _initialize_weights(self):
