@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from torchvision.models import vgg16
+from torchvisionModels import vgg16
 import torchvision.transforms as transforms
 from datasets.loader import VOC
 
@@ -99,11 +99,19 @@ for e in range(EPOCH):
             targets = targets.to(device)
             # targets = targets.cuda()
 
-            pred = model(images)
-            # pred = model(images).cuda()
-            # loss
-            loss = criterion(pred.double(), targets)
-            valid_loss += loss.item()
+            for idx in range(20):
+                model = model.to(device)
+                pred = model(images, idx)
+                # pred = model(images).cuda()
+                # loss
+                loss = criterion(pred.double(), targets)
+                valid_loss += loss.item()
+
+            # pred = model(images)
+            # # pred = model(images).cuda()
+            # # loss
+            # loss = criterion(pred.double(), targets)
+            # valid_loss += loss.item()
 
     total_valid_loss = valid_loss / valid_iter
 
