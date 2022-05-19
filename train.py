@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from torchvision import models
+from torchvision.models import vgg16
 import torchvision.transforms as transforms
 from datasets.loader import VOC
 
@@ -41,7 +41,7 @@ train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
 valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
-model = models.vgg16(pretrained=True).to(device)
+model = vgg16(pretrained=True).to(device)
 # model = models.vgg16(pretrained=True).cuda()
 
 # VOC num class 20
@@ -74,18 +74,21 @@ for e in range(EPOCH):
         # images = images.cuda()
         targets = targets.to(device)
         # targets = targets.cuda()
-        optimizer.zero_grad()
+        
         # forward
-        model = model.to(device)
-        pred = model(images)
-        # pred = model(images).cuda()
-        # loss
-        loss = criterion(pred.double(), targets)
-        train_loss += loss.item()
-        # backward
-        loss.backward(retain_graph=True)
-        # weight update
-        optimizer.step()
+        for idx in range(20):
+            optimizer.zero_grad()
+            model = model.to(device)
+            pred = model(images, idx)
+            # pred = model(images).cuda()
+            # loss
+            loss = criterion(pred.double(), targets)
+            train_loss += loss.item()
+            # backward
+            loss.backward(retain_graph=True)
+            # weight update
+            optimizer.step()
+        
 
     total_train_loss = train_loss / train_iter
 
