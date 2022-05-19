@@ -47,7 +47,7 @@ model = models.vgg16(pretrained=True).to(device)
 # model = models.vgg16(pretrained=True).cuda()
 
 # VOC num class 20
-# model.classifier[6] = nn.Sequential([nn.Linear(4096, 20), nn.sigmoid()])
+# model.classifier[6].append(nn.Sequential([nn.Linear(4096, 20), nn.sigmoid()]))
 
 # Freezing
 for i, (name, param) in enumerate(model.features.named_parameters()):
