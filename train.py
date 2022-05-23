@@ -46,14 +46,14 @@ model = vgg16(pretrained=True).to(device)
 
 # VOC num class 20
 # model.classifier[6] = nn.Sequential([nn.Linear(4096, 20), nn.Sigmoid()])
-model.classifier[6] = nn.Linear(4096, 20)
+# model.classifier[6] = nn.Linear(4096, 20)
 
 # Freezing
 for i, (name, param) in enumerate(model.features.named_parameters()):
     param.requires_grad = False
 
 # Momentum / L2 panalty
-optimizer = optim.SGD(model.classifier.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
+optimizer = optim.SGD(model.classifiers[0].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer,
                                            milestones=[50, 100, 150],
                                            gamma=0.1)
