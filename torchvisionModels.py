@@ -111,7 +111,6 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
         del(state_dict['classifier.6.bias'])
         
         model.load_state_dict(state_dict)
-        print(4)
     return model
 
 
@@ -125,5 +124,4 @@ def vgg16(pretrained=False, progress=True, **kwargs):
         progress (bool): If True, displays a progress bar of the download to stderr
     """
     a=_vgg('vgg16', 'D', False, pretrained, progress, **kwargs)
-    print(1)
     return a

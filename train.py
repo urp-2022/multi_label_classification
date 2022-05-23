@@ -68,7 +68,6 @@ for e in range(EPOCH):
     valid_loss = 0
 
     scheduler.step()
-
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
         # images = images.cuda()
