@@ -35,13 +35,13 @@ class VGG(nn.Module):
         self.classifiers = []
         for i in range(20):
             self.classifiers.append(nn.Sequential(
-                nn.Linear(512 * 7 * 7, 4096),
+                nn.Linear(512 * 7 * 7, 1024),
                 nn.ReLU(True),
                 nn.Dropout(),
-                nn.Linear(4096, 4096),
+                nn.Linear(1024, 256),
                 nn.ReLU(True),
                 nn.Dropout(),
-                nn.Linear(4096, 1),
+                nn.Linear(256, 1),
             ))
 
         if init_weights:
