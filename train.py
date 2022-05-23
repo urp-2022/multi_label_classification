@@ -4,11 +4,9 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-import models
-from models import vgg16
-# from torchvision import models
 import torchvision.transforms as transforms
 from datasets.loader import VOC
+from model import vgg16
 
 VOC_CLASSES = (
     'aeroplane', 'bicycle', 'bird', 'boat',
@@ -21,12 +19,6 @@ MODEL_PATH = 'model.h5'
 BATCH_SIZE = 16
 EPOCH = 100
 
-# if torch.cuda.is_available():
-#     device = 'cuda'
-#     # torch.set_default_tensor_type('torch.cuda.FloatTensor')
-# else:
-#     device = 'cpu'
-#     # torch.set_default_tensor_type('torch.FloatTensor')
 ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
@@ -42,9 +34,8 @@ voc = VOC(batch_size=BATCH_SIZE, year="2007")
 train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
 valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
-# load model
-model = models.vgg16(pretrained=True).to(device)
-# model = models.vgg16(pretrained=True).cuda()
+# load model  
+model = vgg16(pretrained=True).to(device)
 
 # VOC num class 20
 # model.classifier[6].append(nn.Sequential([nn.Linear(4096, 20), nn.sigmoid()]))
@@ -54,7 +45,7 @@ for i, (name, param) in enumerate(model.features.named_parameters()):
     param.requires_grad = False
 
 # Momentum / L2 panalty
-optimizer = optim.SGD(model.classifier.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
+optimizer = optim.SGD(model.classifiers[0].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer,
                                            milestones=[50, 100, 150],
                                            gamma=0.1)
@@ -65,58 +56,58 @@ train_iter = len(train_loader)
 valid_iter = len(valid_loader)
 
 model = model.to(device)
+for i in range(20):
+  model.classifiers[i] = model.classifiers[i].to(device)
 
 for e in range(EPOCH):
     train_loss = 0
     valid_loss = 0
 
-    scheduler.step()
-
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
-        total_train_loss = []
         images = images.to(device)
-        # targets = targets.to(device)
-        for i in range(0, 20):
-            class_targets = targets[i]
-            class_targets = class_targets.to(device)            
+        for idx in range(0, 20):
+            scheduler.step()
+
+            class_targets = []
+            for k in range(targets.shape[0]):
+              li = []
+              li.append(targets[k][idx])
+              class_targets.append(li)
+            class_targets = torch.tensor(class_targets).to(device)   
+
             optimizer.zero_grad()
             # forward
-            pred = model(images, i)
+            pred = model.forward(images, idx)
             # loss
-            loss = criterion(pred.double(), targets)
+            loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
             # backward
             loss.backward(retain_graph=True)
             # weight update
             optimizer.step()
-            total_train_loss.append(train_loss / train_iter)
 
+    total_train_loss = train_loss / train_iter
 
-    # with torch.no_grad():
-    #     for images, targets in valid_loader:
-    #         images = images.to(device)
-    #         for i in range(0, 20):
+    with torch.no_grad():
+        for images, targets in valid_loader:
+            for idx in range(20):
+                class_targets = []
+                for j in range(targets.shape[0]):
+                    li = []
+                    li.append(targets[j][idx])
+                    class_targets.append(li)
+                class_targets = torch.tensor(class_targets).to(device)
 
-    #         targets = targets.to(device)
-    #         pred = model(images)
-    #         # loss
-    #         loss = criterion(pred.double(), targets)
-    #         valid_loss += loss.item()
+                pred = model(images, idx)
+                # loss
+                loss = criterion(pred.double(), class_targets)
+                valid_loss += loss.item()
 
-    # total_valid_loss = valid_loss / valid_iter
+    total_valid_loss = valid_loss / valid_iter
 
-    # print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
+    print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
 
-    # if best_loss > total_valid_loss:
-    #     print("model saved")
-    #     torch.save(model.state_dict(), 'model.h5')
-    #     best_loss = total_valid_loss
-
-"""
-from utils import save_tensor_image
-
-for image, targets in train_loader:
-    save_tensor_image(image[0])
-    print(targets)
-    break
-"""
+    if best_loss > total_valid_loss:
+        print("model saved")
+        torch.save(model.state_dict(), 'model.h5')
+        best_loss = total_valid_loss

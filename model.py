@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-# from .utils import load_state_dict_from_url
 try:
     from torch.hub import load_state_dict_from_url
 except ImportError:
@@ -13,14 +12,7 @@ __all__ = [
 
 
 model_urls = {
-    'vgg11': 'https://download.pytorch.org/models/vgg11-bbd30ac9.pth',
-    'vgg13': 'https://download.pytorch.org/models/vgg13-c768596a.pth',
     'vgg16': 'https://download.pytorch.org/models/vgg16-397923af.pth',
-    'vgg19': 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
-    'vgg11_bn': 'https://download.pytorch.org/models/vgg11_bn-6002323d.pth',
-    'vgg13_bn': 'https://download.pytorch.org/models/vgg13_bn-abd245e5.pth',
-    'vgg16_bn': 'https://download.pytorch.org/models/vgg16_bn-6c64b313.pth',
-    'vgg19_bn': 'https://download.pytorch.org/models/vgg19_bn-c79401a0.pth',
 }
 
 
@@ -30,16 +22,16 @@ class VGG(nn.Module):
         super(VGG, self).__init__()
         self.features = features
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
-        self.classifier = []
+        self.classifiers = []
         for i in range(0, num_classes):
-            self.classifier.append(nn.Sequential(
-                nn.Linear(512 * 7 * 7, 4096),
+            self.classifiers.append(nn.Sequential(
+                nn.Linear(512 * 7 * 7, 1024),
                 nn.ReLU(True),
                 nn.Dropout(),
-                nn.Linear(4096, 4096),
+                nn.Linear(1024, 256),
                 nn.ReLU(True),
                 nn.Dropout(),
-                nn.Linear(4096, num_classes),
+                nn.Linear(256, 1),
             ))
         if init_weights:
             self._initialize_weights()
@@ -48,7 +40,7 @@ class VGG(nn.Module):
         x = self.features(x)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
-        x = self.classifier[idx](x)
+        x = self.classifiers[idx](x)
         return x
 
     def _initialize_weights(self):
@@ -96,6 +88,13 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
+        del(state_dict['classifier.0.weight'])
+        del(state_dict['classifier.0.bias'])
+        del(state_dict['classifier.3.weight'])
+        del(state_dict['classifier.3.bias'])
+        del(state_dict['classifier.6.weight'])
+        del(state_dict['classifier.6.bias'])
+
         model.load_state_dict(state_dict)
     return model
 
