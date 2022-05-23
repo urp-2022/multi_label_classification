@@ -98,10 +98,18 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
         kwargs['init_weights'] = False
     model = VGG(make_layers(cfgs[cfg], batch_norm=batch_norm), **kwargs)
     if pretrained:
-        state_dict = load_state_dict_from_url(model_urls[arch],
-                                              progress=progress)
-        for var_name in state_dict:
-            print(var_name, "\t", state_dict[var_name])
+        state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
+        # for var_name in state_dict:
+        #     print(var_name, "\t", state_dict[var_name])
+        # new_state_dict
+        # for item in state_dict:
+        del(state_dict['classifier.0.weight'])
+        del(state_dict['classifier.0.bias'])
+        del(state_dict['classifier.3.weight'])
+        del(state_dict['classifier.3.bias'])
+        del(state_dict['classifier.6.weight'])
+        del(state_dict['classifier.6.bias'])
+        
         model.load_state_dict(state_dict)
         print(4)
     return model
