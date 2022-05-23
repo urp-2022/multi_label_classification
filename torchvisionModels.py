@@ -96,13 +96,12 @@ cfgs = {
 def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
     if pretrained:
         kwargs['init_weights'] = False
-        print(1)
     model = VGG(make_layers(cfgs[cfg], batch_norm=batch_norm), **kwargs)
     if pretrained:
-        print(2)
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
-        print(3)
+        for var_name in state_dict:
+            print(var_name, "\t", state_dict[var_name])
         model.load_state_dict(state_dict)
         print(4)
     return model
