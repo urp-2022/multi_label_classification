@@ -42,6 +42,7 @@ valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
 model = vgg16(pretrained=True).to(device)
+print("0")
 # model = models.vgg16(pretrained=True).cuda()
 
 # VOC num class 20
@@ -63,25 +64,34 @@ best_loss = 100
 train_iter = len(train_loader)
 valid_iter = len(valid_loader)
 
+model = model.to(device)
+for i in range(20):
+  model.classifiers[i] = model.classifiers[i].to(device)
+  
 for e in range(EPOCH):
     train_loss = 0
     valid_loss = 0
-
     scheduler.step()
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
-        # images = images.cuda()
+        # # images = images.cuda()
         targets = targets.to(device)
         # targets = targets.cuda()
         
         # forward
         for idx in range(20):
+            class_targets = []
+            for j in range(targets.shape[0]):
+              li = []
+              li.append(targets[j][idx])
+              class_targets.append(li)
+            class_targets = torch.tensor(class_targets).to(device)
+            
             optimizer.zero_grad()
-            model = model.to(device)
             pred = model(images, idx)
             # pred = model(images).cuda()
             # loss
-            loss = criterion(pred.double(), targets)
+            loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
             # backward
             loss.backward(retain_graph=True)
@@ -120,12 +130,3 @@ for e in range(EPOCH):
         print("model saved")
         torch.save(model.state_dict(), 'model.h5')
         best_loss = total_valid_loss
-
-"""
-from utils import save_tensor_image
-
-for image, targets in train_loader:
-    save_tensor_image(image[0])
-    print(targets)
-    break
-"""
