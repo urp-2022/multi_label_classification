@@ -124,4 +124,6 @@ def vgg16(pretrained=False, progress=True, **kwargs):
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
     """
-    return _vgg('vgg16', 'D', False, pretrained, progress, **kwargs)
+    a=_vgg('vgg16', 'D', False, pretrained, progress, **kwargs)
+    print(1)
+    return a
