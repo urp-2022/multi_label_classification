@@ -82,9 +82,9 @@ for e in range(EPOCH):
         for idx in range(20):
             class_targets = []
             for j in range(targets.shape[0]):
-              li = []
-              li.append(targets[j][idx])
-              class_targets.append(li)
+                li = []
+                li.append(targets[j][idx])
+                class_targets.append(li)
             class_targets = torch.tensor(class_targets).to(device)
             
             optimizer.zero_grad()
@@ -107,13 +107,18 @@ for e in range(EPOCH):
             # images = images.cuda()
             targets = targets.to(device)
             # targets = targets.cuda()
-
             for idx in range(20):
-                model = model.to(device)
+                class_targets = []
+                for j in range(targets.shape[0]):
+                    li = []
+                    li.append(targets[j][idx])
+                    class_targets.append(li)
+                class_targets = torch.tensor(class_targets).to(device)
+
                 pred = model(images, idx)
                 # pred = model(images).cuda()
                 # loss
-                loss = criterion(pred.double(), targets)
+                loss = criterion(pred.double(), class_targets)
                 valid_loss += loss.item()
 
             # pred = model(images)
