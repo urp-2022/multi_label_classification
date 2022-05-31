@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from torchvisionModels import vgg16
+from model import vgg16
 import torchvision.transforms as transforms
 from datasets.loader import VOC
 
@@ -19,12 +19,6 @@ MODEL_PATH = 'model.h5'
 BATCH_SIZE = 16
 EPOCH = 30
 
-# if torch.cuda.is_available():
-#     device = 'cuda'
-#     # torch.set_default_tensor_type('torch.cuda.FloatTensor')
-# else:
-#     device = 'cpu'
-#     # torch.set_default_tensor_type('torch.FloatTensor')
 ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
