@@ -6,9 +6,9 @@ import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
 from model import vgg16
+from torchvision import models
 import torchvision.transforms as transforms
 from datasets.loader import VOC
-from torchvision import models
 
 VOC_CLASSES = (
     'aeroplane', 'bicycle', 'bird', 'boat',
@@ -38,7 +38,6 @@ valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
 model = vgg16().to(device)
-model = vgg16().to(device)
 pretrained_model  = models.vgg16(pretrained=True).to(device)
 model_dict = model.state_dict()
 pretrained_dict = pretrained_model.state_dict()
@@ -51,18 +50,17 @@ for i, (name, param) in enumerate(model.features.named_parameters()):
     param.requires_grad = False
 
 # Momentum / L2 panalty
-optimizer_li = []
-scheduler_li = []
-for i in range(0, 20):
-    optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9))
-    scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
-                                            milestones=[50, 100, 150],
-                                            gamma=0.1))
-# print(optimizer_li)    
-# optimizer = optim.SGD(model.classifiers[0].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
-# scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer,
-#                                            milestones=[50, 100, 150],
-#                                            gamma=0.1)
+# optimizer_li = []
+# scheduler_li = []
+# for i in range(0, 20):
+#     optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9))
+#     scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
+#                                             milestones=[50, 100, 150],
+#                                             gamma=0.1))
+optimizer = optim.SGD(model.classifiers[0].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
+scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer,
+                                           milestones=[50, 100, 150],
+                                           gamma=0.1)
 criterion = nn.BCEWithLogitsLoss()
 
 best_loss = 100
@@ -89,7 +87,7 @@ for e in range(EPOCH):
                 class_targets.append(li)
             class_targets = torch.tensor(class_targets).to(device)
             
-            optimizer_li[idx].zero_grad()
+            optimizer.zero_grad()
             pred = model(images, idx)
             # loss
             loss = criterion(pred.double(), class_targets)
@@ -97,9 +95,8 @@ for e in range(EPOCH):
             # backward
             loss.backward(retain_graph=True)
             # weight update
-            optimizer_li[idx].step()
-    for index in range(20):
-        scheduler_li[index].step()
+            optimizer.step()
+    scheduler.step()
         
 
     total_train_loss = (train_loss / 20) / train_iter
@@ -129,4 +126,5 @@ for e in range(EPOCH):
     if best_loss > total_valid_loss:
         print("model saved")
         torch.save(model.state_dict(), 'model.h5')
+        # torch.save(model, 'model_all.h5')
         best_loss = total_valid_loss
