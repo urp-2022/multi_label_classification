@@ -49,13 +49,13 @@ model.load_state_dict(model_dict)
 optimizer_li = []
 scheduler_li = []
 for i in range(0, 20):
-    optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9))
+    optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.005, weight_decay=1e-5, momentum=0.9))
     scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
-                                            milestones=[50, 100, 150],
+                                            milestones=[30, 80],
                                             gamma=0.1))
-total_optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
+total_optimizer = optim.SGD(model.parameters(), lr=0.005, weight_decay=1e-5, momentum=0.9)
 total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
-                                        milestones=[50, 100, 150],
+                                        milestones=[30, 80],
                                         gamma=0.1)
 
 criterion = nn.BCEWithLogitsLoss()
@@ -75,8 +75,9 @@ for e in range(EPOCH):
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
         targets = targets.to(device)
-
-        # total_optimizer.zero_grad()
+        
+        total_loss = 0
+        total_optimizer.zero_grad()
         # forward
         for idx in range(20):
             class_targets = []
@@ -90,20 +91,21 @@ for e in range(EPOCH):
             pred = model(images, idx)
             # loss
             loss = criterion(pred.double(), class_targets)
-            # if(idx==0):
-            #     total_loss=loss.item
-            # else:
-            #     total_loss=total_loss+loss
             train_loss += loss.item()
+            total_loss += loss.item()
             # backward
             loss.backward()
             # weight update
             optimizer_li[idx].step()
+        total_loss_torch = torch.tensor(total_loss, requires_grad=True)
+        total_loss_func = total_loss_torch/20
+        # total_loss = total_loss/20
         # total_loss.backward()
-        # total_optimizer.step()
+        total_loss_func.backward()
+        total_optimizer.step()
     for index in range(20):
         scheduler_li[index].step()
-    # total_scheduler.step()
+    total_scheduler.step()
 
     total_train_loss = (train_loss / 20) / train_iter
 
