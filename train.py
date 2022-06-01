@@ -111,6 +111,7 @@ for e in range(EPOCH):
 
     total_valid_loss = valid_loss / valid_iter
 
+    print("epoch : "+str(e))
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
 
     if best_loss > total_valid_loss:
