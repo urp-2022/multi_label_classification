@@ -1,6 +1,5 @@
 /datasets/voc/
 venv/
-model.h5
+*.h5
 __pycache__/
 .idea/
-model_param_grad_per_class(ep=40, train).h5
