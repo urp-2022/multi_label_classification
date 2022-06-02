@@ -88,12 +88,12 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
     if pretrained:
         state_dict = load_state_dict_from_url(model_urls[arch],
                                               progress=progress)
-        del(state_dict['classifier.0.weight'])
-        del(state_dict['classifier.0.bias'])
-        del(state_dict['classifier.3.weight'])
-        del(state_dict['classifier.3.bias'])
-        del(state_dict['classifier.6.weight'])
-        del(state_dict['classifier.6.bias'])
+        # del(state_dict['classifier.0.weight'])
+        # del(state_dict['classifier.0.bias'])
+        # del(state_dict['classifier.3.weight'])
+        # del(state_dict['classifier.3.bias'])
+        # del(state_dict['classifier.6.weight'])
+        # del(state_dict['classifier.6.bias'])
 
         model.load_state_dict(state_dict)
     return model
