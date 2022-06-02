@@ -21,6 +21,7 @@ MODEL_PATH = 'model.h5'
 BATCH_SIZE = 16
 EPOCH = 40
 
+
 ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
@@ -51,14 +52,19 @@ scheduler_li = []
 for i in range(0, 20):
     optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9))
     scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
-                                            milestones=[30, 80],
+                                            milestones=[3, 13, 23],
                                             gamma=0.1))
 total_optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
-                                        milestones=[30, 80],
+                                        milestones=[3, 13, 23],
                                         gamma=0.1)
 
 criterion = nn.BCEWithLogitsLoss()
+
+# print(model.classifiers)
+# print(model.classifiers[0].parameters)
+# print(optimizer_li[0].state_dict)
+# print(total_optimizer.state_dict)
 
 best_loss = 100
 train_iter = len(train_loader)
@@ -67,54 +73,65 @@ valid_iter = len(valid_loader)
 model = model.to(device)
 for i in range(20):
   model.classifiers[i] = model.classifiers[i].to(device)
-model.train() 
 
+model.train()
 for e in range(EPOCH):
     print("epoch : "+str(e))
     train_loss = 0
     valid_loss = 0
+    train_loss_class = []
+    valid_loss_class = []
+    
+    for idx in range(20):
+        train_loss_class.append(0)
+        valid_loss_class.append(0)
+
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
         targets = targets.to(device)
-        
-        
-        loss_li = []
-        total_loss_item=0
-        # total_loss = 0
 
         # forward
         for idx in range(20):
-            # print(" ")
-            # print(idx)
-            # print(targets)
+            for k in range(20):
+                if(k==idx):
+                    for param in model.classifiers[idx].parameters():
+                        param.requires_grad = True
+                else:
+                    for param in model.classifiers[k].parameters():
+                        param.requires_grad = False
             class_targets = []
             for j in range(targets.shape[0]):
                 li = []
                 li.append(targets[j][idx])
                 class_targets.append(li)
             class_targets = torch.tensor(class_targets).to(device)
-            # print(class_targets)
-            # print(targets.shape)
-            # print(class_targets.shape)
             
             pred = model(images, idx)
-            # print(torch.sigmoid(pred))
             # loss
             loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
-            total_loss_item += loss.item()
-            # backward
+            train_loss_class[idx]+=loss.item()
+            if(idx==0):
+                train_total_loss = loss.item()
+            else:
+                train_total_loss += loss.item()
+
             optimizer_li[idx].zero_grad()
             loss.backward()
-            # weight update
             optimizer_li[idx].step()
-        total_loss_item/=20
-        total_loss = torch.tensor(total_loss_item, device=device, requires_grad=True)
+        for idx in range(20):
+            for param in model.classifiers[idx].parameters():
+                param.requires_grad = True
         total_optimizer.zero_grad()
-        total_loss.backward()
+        train_total_loss/=20
+        train_total_loss_grad = torch.tensor(train_total_loss, device=device, requires_grad=True)
+        train_total_loss_grad.backward()
         total_optimizer.step()
+        
     for index in range(20):
         scheduler_li[index].step()
+        train_loss_class[index]/=train_iter
+        print(VOC_CLASSES[index] + " : " + str(train_loss_class[index]))
     total_scheduler.step()
 
     total_train_loss = (train_loss / 20) / train_iter
@@ -135,10 +152,15 @@ for e in range(EPOCH):
                 # loss
                 loss = criterion(pred.double(), class_targets)
                 valid_loss += loss.item()
+                valid_loss_class[idx] += loss.item()
 
     total_valid_loss = (valid_loss /20) / valid_iter
+    for index in range(20):
+        valid_loss_class[index]/=train_iter
+        print(VOC_CLASSES[index] + " : " + str(valid_loss_class[index]))
 
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
+    print(" ")
 
     if best_loss > total_valid_loss:
         print("model saved")
