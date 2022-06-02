@@ -18,7 +18,7 @@ VOC_CLASSES = (
     'sheep', 'sofa', 'train', 'tvmonitor'
 )
 MODEL_PATH = 'model.h5'
-BATCH_SIZE = 16
+BATCH_SIZE = 8
 EPOCH = 40
 
 
@@ -46,9 +46,6 @@ pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
 model_dict.update(pretrained_dict)
 model.load_state_dict(model_dict)
 
-# for i, (name, param) in enumerate(model.features.named_parameters()):
-#     param.requires_grad = False
-
 # Momentum / L2 panalty
 optimizer_li = []
 scheduler_li = []
@@ -57,7 +54,7 @@ for i in range(0, 20):
     scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
                                             milestones=[3, 13, 23],
                                             gamma=0.1))
-total_optimizer = optim.SGD(model.parameters(), lr=0.005, weight_decay=1e-5, momentum=0.9)
+total_optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
                                         milestones=[30, 80],
                                         gamma=0.1)
@@ -125,16 +122,16 @@ for e in range(EPOCH):
             # weight update
             # optimizer_li[idx].step()
             total_optimizer.zero_grad()
-            loss.backward()
+            loss.backward(retain_graph=True)
             total_optimizer.step()
 
-        # for idx in range(20):
-        #     for param in model.classifiers[idx].parameters():
-        #         param.requires_grad = True
-        # # total_optimizer.zero_grad()
-        # train_total_loss/=20
-        # train_total_loss.backward()
-        # total_optimizer.step()
+        for idx in range(20):
+            for param in model.classifiers[idx].parameters():
+                param.requires_grad = True
+        # total_optimizer.zero_grad()
+        train_total_loss/=20
+        train_total_loss.backward()
+        total_optimizer.step()
 
     for index in range(20):
         # scheduler_li[index].step()

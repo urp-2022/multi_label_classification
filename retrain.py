@@ -38,16 +38,15 @@ train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
 valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
+model_path = "model_param_grad_per_class(ep=40, train).h5"
 model = vgg16().to(device)
-pretrained_model  = models.vgg16(pretrained=True).to(device)
-model_dict = model.state_dict()
-pretrained_dict = pretrained_model.state_dict()
-pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-model_dict.update(pretrained_dict)
-model.load_state_dict(model_dict)
-
-# for i, (name, param) in enumerate(model.features.named_parameters()):
-#     param.requires_grad = False
+model.load_state_dict(torch.load(model_path))
+# pretrained_model  = models.vgg16(pretrained=True).to(device)
+# model_dict = model.state_dict()
+# pretrained_dict = pretrained_model.state_dict()
+# pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+# model_dict.update(pretrained_dict)
+# model.load_state_dict(model_dict)
 
 # Momentum / L2 panalty
 optimizer_li = []
@@ -56,10 +55,10 @@ for i in range(0, 20):
     optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9))
     scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
                                             milestones=[3, 13, 23],
-                                            gamma=0.1))
-total_optimizer = optim.SGD(model.parameters(), lr=0.005, weight_decay=1e-5, momentum=0.9)
+                                              gamma=0.1))
+total_optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
-                                        milestones=[30, 80],
+                                        milestones=[3, 13, 23],
                                         gamma=0.1)
 
 criterion = nn.BCEWithLogitsLoss()
@@ -84,10 +83,18 @@ for e in range(EPOCH):
     valid_loss = 0
     train_loss_class = []
     valid_loss_class = []
+    # train_acc_class = []
+    # valid_acc_class = []
+    # train_correct_class = []
+    # valid_correct_class = []
     
     for idx in range(20):
         train_loss_class.append(0)
         valid_loss_class.append(0)
+        # train_acc_class.append(0)
+        # valid_acc_class.append(0)
+        # train_correct_class.append(0)
+        # valid_correct_class.append(0)
 
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
@@ -114,33 +121,22 @@ for e in range(EPOCH):
             loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
             train_loss_class[idx]+=loss.item()
-            if(idx==0):
-                train_total_loss = loss
-            else:
-                train_total_loss += loss
-
+            
+            # train_correct_class[idx] += (torch.round(torch.sigmoid(pred))==class_targets).sum().item()
             # backward
-            # optimizer_li[idx].zero_grad()
-            # loss.backward()
-            # weight update
-            # optimizer_li[idx].step()
-            total_optimizer.zero_grad()
+            optimizer_li[idx].zero_grad()
             loss.backward()
-            total_optimizer.step()
-
-        # for idx in range(20):
-        #     for param in model.classifiers[idx].parameters():
-        #         param.requires_grad = True
-        # # total_optimizer.zero_grad()
-        # train_total_loss/=20
-        # train_total_loss.backward()
+            # weight update
+            optimizer_li[idx].step()
+        # total_loss.backward()
         # total_optimizer.step()
-
     for index in range(20):
-        # scheduler_li[index].step()
+        scheduler_li[index].step()
         train_loss_class[index]/=train_iter
         print(VOC_CLASSES[index] + " : " + str(train_loss_class[index]))
-    total_scheduler.step()
+        # train_correct_class[index]/=train_iter
+        # print(VOC_CLASSES[index] + " : " + str(train_loss_class[index]) + "  " + str(train_correct_class))
+    # total_scheduler.step()
 
     total_train_loss = (train_loss / 20) / train_iter
 
@@ -161,11 +157,14 @@ for e in range(EPOCH):
                 loss = criterion(pred.double(), class_targets)
                 valid_loss += loss.item()
                 valid_loss_class[idx] += loss.item()
+                # valid_correct_class[idx] += (torch.round(torch.sigmoid(pred))==class_targets).sum().item()
 
     total_valid_loss = (valid_loss /20) / valid_iter
     for index in range(20):
         valid_loss_class[index]/=train_iter
         print(VOC_CLASSES[index] + " : " + str(valid_loss_class[index]))
+        # valid_correct_class[index]/=train_iter
+        # print(VOC_CLASSES[index] + " : " + str(valid_loss_class[index]) + "  " + str(valid_correct_class))
 
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
     print(" ")
