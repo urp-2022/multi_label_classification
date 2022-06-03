@@ -32,6 +32,7 @@ class VGG(nn.Module):
             nn.Dropout(),
             nn.Linear(4096, num_classes),
         )
+        '''
         self.classifier1 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 4096),
             nn.ReLU(True),
@@ -202,18 +203,187 @@ class VGG(nn.Module):
             nn.ReLU(True),
             nn.Dropout(),
             nn.Linear(4096, num_classes),
+        )'''
+        self.classifier0 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
         )
-        # self.classifiers = []
-        # for i in range(20):
-        #     self.classifiers.append(nn.Sequential(
-        #         nn.Linear(512 * 7 * 7, 1024),
-        #         nn.ReLU(True),
-        #         nn.Dropout(),
-        #         nn.Linear(1024, 256),
-        #         nn.ReLU(True),
-        #         nn.Dropout(),
-        #         nn.Linear(256, 1),
-        #     ))
+        self.classifier1 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier2 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier3 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier4 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier5 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier6 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier7 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier8 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier9 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier10 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier11 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier12 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier13 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier14 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier15 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier16 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier17 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier18 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
+        self.classifier19 = nn.Sequential(
+            nn.Linear(512 * 7 * 7, 1024),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(1024, 256),
+            nn.ReLU(True),
+            nn.Dropout(),
+            nn.Linear(256, num_classes),
+        )
 
         if init_weights:
             self._initialize_weights()
@@ -309,17 +479,25 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
         kwargs['init_weights'] = False
     model = VGG(make_layers(cfgs[cfg], batch_norm=batch_norm), **kwargs)
     if pretrained:
-        state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
-        # for var_name in state_dict:
-        #     print(var_name, "\t", state_dict[var_name])
-        # new_state_dict
-        # for item in state_dict:
-        # del(state_dict['classifier.0.weight'])
-        # del(state_dict['classifier.0.bias'])
-        # del(state_dict['classifier.3.weight'])
-        # del(state_dict['classifier.3.bias'])
-        # del(state_dict['classifier.6.weight'])
-        # del(state_dict['classifier.6.bias'])
+        pretrained_state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
+        state_dict = model.state_dict()
+        
+        cw0 = pretrained_state_dict.get('classifier.0.weight')
+        cw3 = pretrained_state_dict.get('classifier.3.weight')
+
+        cb0 = pretrained_state_dict.get('classifier.0.bias')
+        cb3 = pretrained_state_dict.get('classifier.3.bias')
+
+        for idx in range(20):
+            cw0_str = 'classifier'+str(idx)+'.0.weight'
+            cw3_str = 'classifier'+str(idx)+'.3.weight'
+            state_dict[cw0_str]=cw0
+            state_dict[cw3_str]=cw3
+
+            cb0_str = 'classifier'+str(idx)+'.0.bias'
+            cb3_str = 'classifier'+str(idx)+'.3.bias'
+            state_dict[cb0_str]=cb0
+            state_dict[cb3_str]=cb3
         
         model.load_state_dict(state_dict)
     return model
