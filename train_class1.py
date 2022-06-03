@@ -38,15 +38,26 @@ train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
 valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
-model = vgg16().to(device)
-pretrained_model  = models.vgg16(pretrained=True).to(device)
-model_dict = model.state_dict()
-pretrained_dict = pretrained_model.state_dict()
-pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-model_dict.update(pretrained_dict)
-model.load_state_dict(model_dict)
+model = vgg16(pretrained=True).to(device)
+# pretrained_model  = models.vgg16(pretrained=True).to(device)
+# model_dict = model.state_dict()
+# pretrained_dict = pretrained_model.state_dict()
 
+# print("our model")
+# print(model_dict.keys())
+# print("\n\npretrianed model")
+# print(pretrained_dict.keys())
 
+# print("\n\n\n\n")
+
+# pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
+# model_dict.update(pretrained_dict)
+# model.load_state_dict(model_dict)
+
+# print("\nour model")
+print(model)
+# print("\n\npretrianed model")
+# print(pretrained_model)
 
 # Momentum / L2 panalty
 # optimizer_li = []
@@ -68,8 +79,8 @@ train_iter = len(train_loader)
 valid_iter = len(valid_loader)
 
 model = model.to(device)
-for i in range(20):
-  model.classifiers[i] = model.classifiers[i].to(device)
+# for i in range(20):
+#   model.classifiers[i] = model.classifiers[i].to(device)
 
 model.train()
 for e in range(EPOCH):
