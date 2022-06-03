@@ -74,9 +74,7 @@ for e in range(EPOCH):
     scheduler.step()
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
-        # # images = images.cuda()
         targets = targets.to(device)
-        # targets = targets.cuda()
         
         # forward
         for idx in range(20):
