@@ -40,11 +40,11 @@ valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 # load model
 model = vgg16(pretrained=True).to(device)
 # pretrained_model  = models.vgg16(pretrained=True).to(device)
-# model_dict = model.state_dict()
+model_dict = model.state_dict()
 # pretrained_dict = pretrained_model.state_dict()
 
-# print("our model")
-# print(model_dict.keys())
+print("our model")
+print(model_dict.keys())
 # print("\n\npretrianed model")
 # print(pretrained_dict.keys())
 
@@ -55,7 +55,7 @@ model = vgg16(pretrained=True).to(device)
 # model.load_state_dict(model_dict)
 
 # print("\nour model")
-print(model)
+# print(model)
 # print("\n\npretrianed model")
 # print(pretrained_model)
 
