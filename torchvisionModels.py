@@ -314,12 +314,12 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
         #     print(var_name, "\t", state_dict[var_name])
         # new_state_dict
         # for item in state_dict:
-        del(state_dict['classifier.0.weight'])
-        del(state_dict['classifier.0.bias'])
-        del(state_dict['classifier.3.weight'])
-        del(state_dict['classifier.3.bias'])
-        del(state_dict['classifier.6.weight'])
-        del(state_dict['classifier.6.bias'])
+        # del(state_dict['classifier.0.weight'])
+        # del(state_dict['classifier.0.bias'])
+        # del(state_dict['classifier.3.weight'])
+        # del(state_dict['classifier.3.bias'])
+        # del(state_dict['classifier.6.weight'])
+        # del(state_dict['classifier.6.bias'])
         
         model.load_state_dict(state_dict)
     return model
