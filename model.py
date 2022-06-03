@@ -298,28 +298,31 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
     if pretrained:
         state_dict = model.state_dict()
         pretrained_state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
-        classifier_str = 'classifier'
-        weight_str = 'weight'
-        bias_str='bias'
-        num_0_str = '.0.'
-        num_3_str = '.3.'
+        pretrained_state_dict = {k: v for k, v in pretrained_state_dict.items() if k in state_dict}
+        state_dict.update(pretrained_state_dict)
+
+        # classifier_str = 'classifier'
+        # weight_str = 'weight'
+        # bias_str='bias'
+        # num_0_str = '.0.'
+        # num_3_str = '.3.'
         
-        cw0 = pretrained_state_dict.get('classifier.0.weight')
-        cw3 = pretrained_state_dict.get('classifier.3.weight')
+        # cw0 = pretrained_state_dict.get('classifier.0.weight')
+        # cw3 = pretrained_state_dict.get('classifier.3.weight')
 
-        cb0 = pretrained_state_dict.get('classifier.0.bias')
-        cb3 = pretrained_state_dict.get('classifier.3.bias')
+        # cb0 = pretrained_state_dict.get('classifier.0.bias')
+        # cb3 = pretrained_state_dict.get('classifier.3.bias')
 
-        for idx in range(20):
-            cw0_str = classifier_str+str(idx)+num_0_str+weight_str
-            cw3_str = classifier_str+str(idx)+num_3_str+weight_str
-            state_dict[cw0_str]=cw0
-            state_dict[cw3_str]=cw3
+        # for idx in range(20):
+        #     cw0_str = classifier_str+str(idx)+num_0_str+weight_str
+        #     cw3_str = classifier_str+str(idx)+num_3_str+weight_str
+        #     state_dict[cw0_str]=cw0
+        #     state_dict[cw3_str]=cw3
 
-            cb0_str = classifier_str+str(idx)+num_0_str+bias_str
-            cb3_str = classifier_str+str(idx)+num_3_str+bias_str
-            state_dict[cb0_str]=cb0
-            state_dict[cb3_str]=cb3
+        #     cb0_str = classifier_str+str(idx)+num_0_str+bias_str
+        #     cb3_str = classifier_str+str(idx)+num_3_str+bias_str
+        #     state_dict[cb0_str]=cb0
+        #     state_dict[cb3_str]=cb3
         
         model.load_state_dict(state_dict)
     return model
