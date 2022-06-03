@@ -18,7 +18,7 @@ VOC_CLASSES = (
     'sheep', 'sofa', 'train', 'tvmonitor'
 )
 MODEL_PATH = 'model.h5'
-BATCH_SIZE = 2
+BATCH_SIZE = 16
 EPOCH = 40
 
 
@@ -82,7 +82,7 @@ for e in range(EPOCH):
     train_loss_class = []
     valid_loss_class = []
     
-    for idx in range(20):
+    for idx in range(1):
         train_loss_class.append(0)
         valid_loss_class.append(0)
 
@@ -91,7 +91,7 @@ for e in range(EPOCH):
         targets = targets.to(device)
 
         # forward
-        for idx in range(20):
+        for idx in range(1):
             class_targets = []
             for j in range(targets.shape[0]):
                 li = []
@@ -114,18 +114,18 @@ for e in range(EPOCH):
         total_optimizer.step()
 
     total_scheduler.step()
-    for index in range(20):
+    for index in range(1):
         # scheduler_li[index].step()
         train_loss_class[index]/=train_iter
         print(VOC_CLASSES[index] + " : " + str(train_loss_class[index]))
 
-    total_train_loss = (train_loss / 20) / train_iter
+    total_train_loss = (train_loss / 1) / train_iter
 
     with torch.no_grad():
         for images, targets in valid_loader:
             images = images.to(device)
             targets = targets.to(device)
-            for idx in range(20):
+            for idx in range(1):
                 class_targets = []
                 for j in range(targets.shape[0]):
                     li = []
@@ -139,8 +139,8 @@ for e in range(EPOCH):
                 valid_loss += loss.item()
                 valid_loss_class[idx] += loss.item()
 
-    total_valid_loss = (valid_loss /20) / valid_iter
-    for index in range(20):
+    total_valid_loss = (valid_loss /1) / valid_iter
+    for index in range(1):
         valid_loss_class[index]/=train_iter
         print(VOC_CLASSES[index] + " : " + str(valid_loss_class[index]))
 

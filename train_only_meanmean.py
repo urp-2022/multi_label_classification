@@ -18,7 +18,7 @@ VOC_CLASSES = (
     'sheep', 'sofa', 'train', 'tvmonitor'
 )
 MODEL_PATH = 'model.h5'
-BATCH_SIZE = 2
+BATCH_SIZE = 16
 EPOCH = 40
 
 
@@ -104,10 +104,16 @@ for e in range(EPOCH):
             loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
             train_loss_class[idx]+=loss.item()
+            print("\njkjkj")
+            loss.backward()
+            # print(pred.grad())
+            # print(pred.retain_grad())
+            print(pred.retain_grad)
+            
             if(idx==0):
-                train_total_loss = loss
+                train_total_loss = pred.grad
             else:
-                train_total_loss += loss
+                train_total_loss += pred.grad
 
         total_optimizer.zero_grad()
         train_total_loss.backward()
@@ -147,7 +153,7 @@ for e in range(EPOCH):
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
     print(" ")
 
-    if best_loss > total_valid_loss:
-        print("model saved")
-        torch.save(model.state_dict(), 'model.h5')
-        best_loss = total_valid_loss
+#    if best_loss > total_valid_loss:
+    print("model saved")
+    torch.save(model.state_dict(), 'model.h5')
+    best_loss = total_valid_loss
