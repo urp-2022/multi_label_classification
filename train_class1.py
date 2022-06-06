@@ -157,5 +157,11 @@ for e in range(EPOCH):
 
     if best_loss > total_valid_loss:
         print("model saved")
+        # torch.save({'model':model.state_dict()}, 'model.tar')
+        # torch.save(model.state_dict(), 'model.pt')
         torch.save(model.state_dict(), 'model.h5')
+        # torch.save(model.state_dict(), 'model.zip')
+        # zipped = zipfile.ZipFile('zipped_model', 'w')
+        # zipped.write('C:\\Stories\\Fantasy\\jungle.pdf', compress_type=zipfile.ZIP_DEFLATED)        
+        # zipped.close()
         best_loss = total_valid_loss

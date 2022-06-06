@@ -9,6 +9,7 @@ from model import vgg16
 import torchvision.transforms as transforms
 from datasets.loader import VOC
 from torchvision import models
+import zipfile
 
 VOC_CLASSES = (
     'aeroplane', 'bicycle', 'bird', 'boat',
