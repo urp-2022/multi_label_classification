@@ -38,42 +38,35 @@ train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
 valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
-model = vgg16().to(device)
-pretrained_model  = models.vgg16(pretrained=True).to(device)
+model = vgg16(pretrained=True).to(device)
 model_dict = model.state_dict()
-pretrained_dict = pretrained_model.state_dict()
-pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict}
-model_dict.update(pretrained_dict)
-model.load_state_dict(model_dict)
+
+print("our model")
+print(model_dict.keys())
+
+for i, (name, param) in enumerate(model.features.named_parameters()):
+    param.requires_grad = False
 
 # Momentum / L2 panalty
-optimizer_li = []
-scheduler_li = []
-for i in range(0, 20):
-    optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9))
-    scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
-                                            milestones=[3, 13, 23],
-                                            gamma=0.1))
+# optimizer_li = []
+# scheduler_li = []
+# for i in range(0, 20):
+#     optimizer_li.append(optim.SGD(model.classifiers[i].parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9))
+#     scheduler_li.append(optim.lr_scheduler.MultiStepLR(optimizer=optimizer_li[i],
+#                                             milestones=[3, 13, 23],
+#                                             gamma=0.1))
 total_optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
-                                        milestones=[3, 13, 23],
+                                        milestones=[30, 80],
                                         gamma=0.1)
 
 criterion = nn.BCEWithLogitsLoss()
-
-# print(model.classifiers)
-# print(model.classifiers[0].parameters)
-# print(optimizer_li[0].state_dict)
-# print(total_optimizer.state_dict)
 
 best_loss = 100
 train_iter = len(train_loader)
 valid_iter = len(valid_loader)
 
 model = model.to(device)
-for i in range(20):
-  model.classifiers[i] = model.classifiers[i].to(device)
-
 model.train()
 for e in range(EPOCH):
     print("epoch : "+str(e))
@@ -92,13 +85,6 @@ for e in range(EPOCH):
 
         # forward
         for idx in range(20):
-            for k in range(20):
-                if(k==idx):
-                    for param in model.classifiers[idx].parameters():
-                        param.requires_grad = True
-                else:
-                    for param in model.classifiers[k].parameters():
-                        param.requires_grad = False
             class_targets = []
             for j in range(targets.shape[0]):
                 li = []
@@ -112,27 +98,19 @@ for e in range(EPOCH):
             train_loss += loss.item()
             train_loss_class[idx]+=loss.item()
             if(idx==0):
-                train_total_loss = loss.item()
+                train_total_loss = loss
             else:
-                train_total_loss += loss.item()
+                train_total_loss += loss
 
-            optimizer_li[idx].zero_grad()
-            loss.backward()
-            optimizer_li[idx].step()
-        for idx in range(20):
-            for param in model.classifiers[idx].parameters():
-                param.requires_grad = True
         total_optimizer.zero_grad()
-        train_total_loss/=20
-        train_total_loss_grad = torch.tensor(train_total_loss, device=device, requires_grad=True)
-        train_total_loss_grad.backward()
+        train_total_loss.backward()
         total_optimizer.step()
-        
+
+    total_scheduler.step()
     for index in range(20):
-        scheduler_li[index].step()
+        # scheduler_li[index].step()
         train_loss_class[index]/=train_iter
         print(VOC_CLASSES[index] + " : " + str(train_loss_class[index]))
-    total_scheduler.step()
 
     total_train_loss = (train_loss / 20) / train_iter
 
@@ -160,9 +138,8 @@ for e in range(EPOCH):
         print(VOC_CLASSES[index] + " : " + str(valid_loss_class[index]))
 
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
-    print(" ")
 
     if best_loss > total_valid_loss:
-        print("model saved")
+        print("model saved\n")
         torch.save(model.state_dict(), 'model.h5')
         best_loss = total_valid_loss
