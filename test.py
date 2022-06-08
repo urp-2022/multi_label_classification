@@ -4,6 +4,7 @@ from torchvision import models
 import torchvision.transforms as transforms
 import numpy as np
 import time
+from model import vgg16
 
 from PIL import Image
 from datasets.loader import VOC
@@ -21,7 +22,7 @@ VOC_CLASSES = (
     'sheep', 'sofa', 'train', 'tvmonitor'
 )
 
-MODEL_PATH = '/content/drive/MyDrive/URP/models/model.h5'
+MODEL_PATH = '/content/drive/MyDrive/URP/models/model_classifiers/model_all_freezed_features.h5'
 BATCH_SIZE = 32
 
 # test dataset
@@ -32,7 +33,7 @@ voc = VOC(batch_size=BATCH_SIZE, year="2007")
 test_loader = voc.get_loader(transformer=test_transformer, datatype='test')
 
 # load model
-model = models.vgg16().to(device)
+model = vgg16().to(device)
 # model.classifier[6] = nn.Linear(4096, 20)
 
 # load weight
@@ -46,15 +47,20 @@ images = test_transformer(Image.open('cat.jpg')).view(1, 3, 224, 224)
 images = images.to(device)
 
 # prediction
-model=model.to(device)
-pred = model(images)
-pred_sigmoid = torch.sigmoid(pred)
-pred_rounded = torch.round(pred_sigmoid)
-tmp=pred_rounded.cpu().detach().numpy()[0]
 
-for i in range(20):
-  if tmp[i]==1:
-    print(VOC_CLASSES[i]) 
+model=model.to(device)
+
+for idx in range(20):
+  pred = model(images, idx)
+  pred_sigmoid = torch.sigmoid(pred)
+  pred_rounded = torch.round(pred_sigmoid)
+  if pred_rounded[0][0]==1:
+    print(VOC_CLASSES[idx]) 
+  # tmp=pred_rounded.cpu().detach().numpy()[0]
+
+# for i in range(20):
+#   if tmp[i]==1:
+#     print(VOC_CLASSES[i]) 
 
   
 #Accuracy===================================
@@ -94,65 +100,68 @@ end = time.time()
 with torch.no_grad():
     for input, target in test_loader:
         input = input.to(device)
-        output = model(input)
-        output = torch.sigmoid(output).cpu()
+        for idx in range(20):
+          class_targets=[]
+          for j in range(target.shape[0]):
+            li = []
+            li.append(target[j][idx])
+            class_targets.append(li)
+          class_targets = torch.tensor(class_targets).to(device)
 
-        target = target
-        #target = target.max(dim=1)[0]
+          output = model(input,idx)
+          output = torch.sigmoid(output).cpu()
 
-        # for mAP calculation
-        preds.append(output.cpu())
-        targets.append(target.cpu())
+          #target = target
+          #target = target.max(dim=1)[0]
 
-        # measure accuracy and record loss
-        pred = output.data.gt(0.5).long()
-        #pred = torch.round(output)
+          # for mAP calculation
+          preds.append(output.cpu())
+          targets.append(class_targets.cpu())
 
-        tp += (pred + target).eq(2).sum(dim=0)
-        fp += (pred - target).eq(1).sum(dim=0)
-        fn += (pred - target).eq(-1).sum(dim=0)
-        tn += (pred + target).eq(0).sum(dim=0)
-        count += input.size(0)
+          # measure accuracy and record loss
+          pred = output.data.gt(0.5).long().to(device)
+          #pred = torch.round(output)
+          # print(pred)
+          # print(class_targets.shape)
+          tp += (pred + class_targets).eq(2).sum(dim=0)
+          fp += (pred - class_targets).eq(1).sum(dim=0)
+          fn += (pred - class_targets).eq(-1).sum(dim=0)
+          tn += (pred + class_targets).eq(0).sum(dim=0)
+          count += input.size(0)
 
-        this_tp = (pred + target).eq(2).sum()
-        this_fp = (pred - target).eq(1).sum()
-        this_fn = (pred - target).eq(-1).sum()
-        this_tn = (pred + target).eq(0).sum()
+          this_tp = (pred + class_targets).eq(2).sum()
+          this_fp = (pred - class_targets).eq(1).sum()
+          this_fn = (pred - class_targets).eq(-1).sum()
+          this_tn = (pred + class_targets).eq(0).sum()
 
-        this_prec = this_tp.float() / (
-            this_tp + this_fp).float() * 100.0 if this_tp + this_fp != 0 else 0.0
-        this_rec = this_tp.float() / (
-            this_tp + this_fn).float() * 100.0 if this_tp + this_fn != 0 else 0.0
+          this_prec = this_tp.float() / (
+              this_tp + this_fp).float() * 100.0 if this_tp + this_fp != 0 else 0.0
+          this_rec = this_tp.float() / (
+              this_tp + this_fn).float() * 100.0 if this_tp + this_fn != 0 else 0.0
 
-        prec.update(float(this_prec), input.size(0))
-        rec.update(float(this_rec), input.size(0))
+          prec.update(float(this_prec), input.size(0))
+          rec.update(float(this_rec), input.size(0))
 
-        # measure elapsed time
-        batch_time.update(time.time() - end)
-        end = time.time()
+          # measure elapsed time
+          batch_time.update(time.time() - end)
+          end = time.time()
 
-        p_c = [float(tp[i].float() / (tp[i] + fp[i]).float()) * 100.0 if tp[
-                                                                             i] > 0 else 0.0
-               for i in range(len(tp))]
-        r_c = [float(tp[i].float() / (tp[i] + fn[i]).float()) * 100.0 if tp[
-                                                                             i] > 0 else 0.0
-               for i in range(len(tp))]
-        f_c = [2 * p_c[i] * r_c[i] / (p_c[i] + r_c[i]) if tp[i] > 0 else 0.0 for
-               i in range(len(tp))]
+          p_c = [float(tp[i].float() / (tp[i] + fp[i]).float()) * 100.0 if tp[
+                                                                                i] > 0 else 0.0
+                  for i in range(len(tp))]
+          r_c = [float(tp[i].float() / (tp[i] + fn[i]).float()) * 100.0 if tp[
+                                                                                i] > 0 else 0.0
+                  for i in range(len(tp))]
+          f_c = [2 * p_c[i] * r_c[i] / (p_c[i] + r_c[i]) if tp[i] > 0 else 0.0 for
+                  i in range(len(tp))]
 
-        mean_p_c = sum(p_c) / len(p_c)
-        mean_r_c = sum(r_c) / len(r_c)
-        mean_f_c = sum(f_c) / len(f_c)
+          mean_p_c = sum(p_c) / len(p_c)
+          mean_r_c = sum(r_c) / len(r_c)
+          mean_f_c = sum(f_c) / len(f_c)
 
-        p_o = tp.sum().float() / (tp + fp).sum().float() * 100.0
-        r_o = tp.sum().float() / (tp + fn).sum().float() * 100.0
-        f_o = 2 * p_o * r_o / (p_o + r_o)
-
-'''
-print(
-        '--------------------------------------------------------------------')
-print(' * P_C {:.2f} R_C {:.2f} F_C {:.2f} P_O {:.2f} R_O {:.2f} F_O {:.2f}'
-      .format(mean_p_c, mean_r_c, mean_f_c, p_o, r_o, f_o))'''
+          p_o = tp.sum().float() / (tp + fp).sum().float() * 100.0
+          r_o = tp.sum().float() / (tp + fn).sum().float() * 100.0
+          f_o = 2 * p_o * r_o / (p_o + r_o)
 
 mAP_score = mAP(torch.cat(targets).numpy(), torch.cat(preds).numpy())
 print("mAP score:", mAP_score)
