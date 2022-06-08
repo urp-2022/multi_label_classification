@@ -30,7 +30,7 @@ train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
-train_transformer_hard = transforms.Compose([transforms.RandomHorizontalFlip(),
+train_transformer_hard = transforms.Compose([transforms.RandomRotation(90),
                                         transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 

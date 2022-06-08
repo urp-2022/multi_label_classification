@@ -73,18 +73,28 @@ class VOC(object):
         else:
             AssertionError("[ERROR] Invalid path")
 
-        custom_voc = VocDataset(path,
-                                dataType=datatype,
-                                transformer=transformer_default)
+        if datatype == 'train' or datatype == 'trainval':
+            custom_voc = VocDataset(path,
+                                    dataType=datatype,
+                                    transformer=transformer_default)
 
-        custom_class_voc = VocDataset(path,
-                                dataType=datatype,
-                                transformer=transformer_hard)
+            custom_class_voc = VocDataset(path,
+                                    dataType='person_train',
+                                    transformer=transformer_hard)
 
-        custom_loader = torch.utils.data.DataLoader(
-            dataset=custom_voc+custom_class_voc,
-            batch_size=self.batch_size,
-            shuffle=True,
-            collate_fn=collate)
+            custom_loader = torch.utils.data.DataLoader(
+                dataset=custom_voc+custom_class_voc,
+                batch_size=self.batch_size,
+                shuffle=True,
+                collate_fn=collate)
+        else:
+            custom_voc = VocDataset(path,
+                                    dataType=datatype,
+                                    transformer=transformer_default)
+            custom_loader = torch.utils.data.DataLoader(
+                dataset=custom_voc,
+                batch_size=self.batch_size,
+                shuffle=True,
+                collate_fn=collate)
 
         return custom_loader
