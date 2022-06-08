@@ -1,1 +1,5 @@
 /datasets/voc/
+venv/
+*.h5
+__pycache__/
+.idea/
