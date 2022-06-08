@@ -482,22 +482,22 @@ def _vgg(arch, cfg, batch_norm, pretrained, progress, **kwargs):
         pretrained_state_dict = load_state_dict_from_url(model_urls[arch], progress=progress)
         state_dict = model.state_dict()
         
-        cw0 = pretrained_state_dict.get('classifier.0.weight')
-        cw3 = pretrained_state_dict.get('classifier.3.weight')
+        # cw0 = pretrained_state_dict.get('classifier.0.weight')
+        # cw3 = pretrained_state_dict.get('classifier.3.weight')
 
-        cb0 = pretrained_state_dict.get('classifier.0.bias')
-        cb3 = pretrained_state_dict.get('classifier.3.bias')
+        # cb0 = pretrained_state_dict.get('classifier.0.bias')
+        # cb3 = pretrained_state_dict.get('classifier.3.bias')
 
-        for idx in range(20):
-            cw0_str = 'classifier'+str(idx)+'.0.weight'
-            cw3_str = 'classifier'+str(idx)+'.3.weight'
-            state_dict[cw0_str]=cw0
-            state_dict[cw3_str]=cw3
+        # for idx in range(20):
+        #     cw0_str = 'classifier'+str(idx)+'.0.weight'
+        #     cw3_str = 'classifier'+str(idx)+'.3.weight'
+        #     state_dict[cw0_str]=cw0
+        #     state_dict[cw3_str]=cw3
 
-            cb0_str = 'classifier'+str(idx)+'.0.bias'
-            cb3_str = 'classifier'+str(idx)+'.3.bias'
-            state_dict[cb0_str]=cb0
-            state_dict[cb3_str]=cb3
+        #     cb0_str = 'classifier'+str(idx)+'.0.bias'
+        #     cb3_str = 'classifier'+str(idx)+'.3.bias'
+        #     state_dict[cb0_str]=cb0
+        #     state_dict[cb3_str]=cb3
         
         model.load_state_dict(state_dict)
     return model
