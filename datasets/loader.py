@@ -65,7 +65,7 @@ class VOC(object):
         self.train_path = './datasets/voc/train/VOC{}'.format(year)
         self.test_path = './datasets/voc/test/VOC{}'.format(year)
 
-    def get_loader(self, transformer, datatype):
+    def get_loader(self, transformer_default, transformer_hard, datatype):
         if datatype == 'train' or datatype == 'val' or datatype == 'trainval':
             path = self.train_path
         elif datatype == 'test':
@@ -75,10 +75,14 @@ class VOC(object):
 
         custom_voc = VocDataset(path,
                                 dataType=datatype,
-                                transformer=transformer)
+                                transformer=transformer_default)
+
+        custom_class_voc = VocDataset(path,
+                                dataType=datatype,
+                                transformer=transformer_hard)
 
         custom_loader = torch.utils.data.DataLoader(
-            dataset=custom_voc,
+            dataset=custom_voc+custom_class_voc,
             batch_size=self.batch_size,
             shuffle=True,
             collate_fn=collate)

@@ -30,16 +30,12 @@ train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
-train_transformer_hard = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        transforms.Resize((224, 224)),
-                                        transforms.ToTensor(),])
-
 valid_transformer = transforms.Compose([transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
 voc = VOC(batch_size=BATCH_SIZE, year="2007")
-train_loader = voc.get_loader(transformer_default=train_transformer, transformer_hard=train_transformer_hard, datatype='train')
-valid_loader = voc.get_loader(transformer_default=valid_transformer, transformer_hard=train_transformer_hard,  datatype='val')
+train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
+valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
 model = vgg16(pretrained=True).to(device)
@@ -58,6 +54,28 @@ total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
                                         gamma=0.1)
 
 criterion = nn.BCEWithLogitsLoss()
+
+classifier_param = []
+classifier_param.append(model.classifier0.parameters())
+classifier_param.append(model.classifier1.parameters())
+classifier_param.append(model.classifier2.parameters())
+classifier_param.append(model.classifier3.parameters())
+classifier_param.append(model.classifier4.parameters())
+classifier_param.append(model.classifier5.parameters())
+classifier_param.append(model.classifier6.parameters())
+classifier_param.append(model.classifier7.parameters())
+classifier_param.append(model.classifier8.parameters())
+classifier_param.append(model.classifier9.parameters())
+classifier_param.append(model.classifier10.parameters())
+classifier_param.append(model.classifier11.parameters())
+classifier_param.append(model.classifier12.parameters())
+classifier_param.append(model.classifier13.parameters())
+classifier_param.append(model.classifier14.parameters())
+classifier_param.append(model.classifier15.parameters())
+classifier_param.append(model.classifier16.parameters())
+classifier_param.append(model.classifier17.parameters())
+classifier_param.append(model.classifier18.parameters())
+classifier_param.append(model.classifier19.parameters())
 
 best_loss = 100
 train_iter = len(train_loader)
@@ -82,6 +100,18 @@ for e in range(EPOCH):
 
         # forward
         for idx in range(20):
+            for k in range(20):
+                if(k==idx):
+                    for param in classifier_param[idx]:
+                        param.requires_grad = True
+                        for p in model.classifier0.parameters():
+                            print(p.requires_grad)
+                        # print(model.classifier0.parameters)
+                        # print(idx)
+                else:
+                    for param in classifier_param[k]:
+                        param.requires_grad = False
+
             class_targets = []
             for j in range(targets.shape[0]):
                 li = []
@@ -94,14 +124,10 @@ for e in range(EPOCH):
             loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
             train_loss_class[idx]+=loss.item()
-            if(idx==0):
-                train_total_loss = loss
-            else:
-                train_total_loss += loss
 
-        total_optimizer.zero_grad()
-        train_total_loss.backward()
-        total_optimizer.step()
+            total_optimizer.zero_grad()
+            loss.backward()
+            total_optimizer.step()
 
     total_scheduler.step()
     for index in range(20):
@@ -137,6 +163,6 @@ for e in range(EPOCH):
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
 
     if best_loss > total_valid_loss:
-        best_loss = total_valid_loss
         print("model saved\n")
         torch.save(model.state_dict(), 'model.h5')
+        best_loss = total_valid_loss
