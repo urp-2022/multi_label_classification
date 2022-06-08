@@ -33,7 +33,7 @@ test_loader = voc.get_loader(transformer=test_transformer, datatype='test')
 
 # load model
 model = models.vgg16().to(device)
-model.classifier[6] = nn.Linear(4096, 20)
+# model.classifier[6] = nn.Linear(4096, 20)
 
 # load weight
 model.load_state_dict(torch.load(MODEL_PATH))
