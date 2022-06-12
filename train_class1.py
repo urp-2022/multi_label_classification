@@ -7,7 +7,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from model import vgg16
 import torchvision.transforms as transforms
-from datasets.loader_custom import VOC
+from datasets.loader import VOC
 from torchvision import models
 
 VOC_CLASSES = (
@@ -149,7 +149,7 @@ for e in range(EPOCH):
 
     total_valid_loss = (valid_loss /1) / valid_iter
     for index in range(1):
-        valid_loss_class[index]/=train_iter
+        valid_loss_class[index]/=valid_iter
         print(VOC_CLASSES[index] + " : " + str(valid_loss_class[index]))
 
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))

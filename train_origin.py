@@ -17,7 +17,7 @@ VOC_CLASSES = (
 )
 MODEL_PATH = 'model_origin.h5'
 BATCH_SIZE = 16
-EPOCH = 30
+EPOCH = 100
 
 # if torch.cuda.is_available():
 #     device = 'cuda'

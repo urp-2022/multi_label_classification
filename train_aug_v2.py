@@ -7,8 +7,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from model import vgg16
 import torchvision.transforms as transforms
-from datasets.loader_custom_v1 import VOC
-from torchvision import models
+from datasets.loader_custom_v2 import VOC
 
 VOC_CLASSES = (
     'aeroplane', 'bicycle', 'bird', 'boat',
@@ -26,21 +25,36 @@ ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
 # augmentation
-train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
-                                        transforms.Resize((224, 224)),
-                                        transforms.ToTensor(),])
+voc = VOC(batch_size=BATCH_SIZE, year="2007")
 
-train_transformer_hard = transforms.Compose([transforms.RandomRotation(90),
+train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
 valid_transformer = transforms.Compose([transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
-voc = VOC(batch_size=BATCH_SIZE, year="2007")
-train_loader = voc.get_loader(transformer_default=train_transformer, transformer_hard=train_transformer_hard, datatype='train', x="1")
-train_loader2 = voc.get_loader(transformer_default=train_transformer, transformer_hard=train_transformer_hard, datatype='train', x="2")
-valid_loader = voc.get_loader(transformer_default=valid_transformer, transformer_hard=train_transformer_hard,  datatype='val', x="1")
+train_loader = voc.get_loader(
+    transformer=train_transformer, 
+    datatype='train',
+    classtype=-1)
+valid_loader = voc.get_loader(
+    transformer=valid_transformer, 
+    datatype='val',
+    classtype=-1)
+
+
+train_transformer_hard = transforms.Compose([transforms.RandomRotation(90),
+                                        transforms.Resize((224, 224)),
+                                        transforms.ToTensor(),])
+train_hard_loader = []
+for i in range(len(VOC_CLASSES)):
+    train_hard_loader.append(voc.get_loader(
+        transformer=train_transformer_hard,
+        datatype='train',
+        classtype=i
+    ))
+
 
 # load model
 model = vgg16(pretrained=True).to(device)
@@ -104,12 +118,12 @@ for e in range(EPOCH):
         train_total_loss.backward()
         total_optimizer.step()
 
-    for i, (images, targets) in tqdm(enumerate(train_loader2), total=train_iter):
+
+    for i, (images, targets) in tqdm(enumerate(train_hard_loader[14]), total=len(train_hard_loader[14])):
         images = images.to(device)
         targets = targets.to(device)
 
         # forward
-
         class_targets = []
         for j in range(targets.shape[0]):
             li = []
@@ -127,12 +141,14 @@ for e in range(EPOCH):
         loss.backward()
         total_optimizer.step()
 
-    
 
     total_scheduler.step()
     for index in range(20):
         # scheduler_li[index].step()
-        train_loss_class[index]/=train_iter
+        if(index==14):
+            train_loss_class[index]/=(train_iter+len(train_hard_loader[14]))
+        else:
+            train_loss_class[index]/=train_iter
         print(VOC_CLASSES[index] + " : " + str(train_loss_class[index]))
 
     total_train_loss = (train_loss / 20) / train_iter
