@@ -55,7 +55,6 @@ for i in range(len(VOC_CLASSES)):
         classtype=i
     ))
 
-
 # load model
 # model = vgg11(pretrained=True).to(device)
 model = vgg16(pretrained=True).to(device)
@@ -86,6 +85,9 @@ valid_iter = len(valid_loader)
 
 model = model.to(device)
 model.train()
+
+aug_class_list = [4, 9, 15, 16]
+
 for e in range(EPOCH):
     print("epoch : "+str(e))
     train_loss = 0
@@ -93,10 +95,6 @@ for e in range(EPOCH):
     train_loss_class = []
     valid_loss_class = []
     
-    # for idx in range(20):
-    #     train_loss_class.append(0)
-    #     valid_loss_class.append(0)
-
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         total_optimizer.zero_grad()
         images = images.to(device)
@@ -115,7 +113,6 @@ for e in range(EPOCH):
             # loss
             loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
-            # train_loss_class[idx]+=loss.item()
             if(idx==0):
                 train_total_loss = loss
             else:
@@ -124,40 +121,33 @@ for e in range(EPOCH):
         train_total_loss.backward()
         total_optimizer.step()
 
+    # for idx in aug_class_list:        
+    #     for i, (images, targets) in tqdm(enumerate(train_hard_loader[idx]), total=len(train_hard_loader[idx])):
+    #         total_optimizer.zero_grad()
+    #         images = images.to(device)
+    #         targets = targets.to(device)
 
-    # for i, (images, targets) in tqdm(enumerate(train_hard_loader[4]), total=len(train_hard_loader[4])):
-    #     total_optimizer.zero_grad()
-    #     images = images.to(device)
-    #     targets = targets.to(device)
+    #         # forward
+    #         class_targets = []
+    #         for j in range(targets.shape[0]):
+    #             li = []
+    #             li.append(targets[j][idx])
+    #             class_targets.append(li)
+    #         class_targets = torch.tensor(class_targets).to(device)
+            
+    #         pred = model(images, idx)
+    #         # loss
+    #         loss = criterion(pred.double(), class_targets)
+    #         train_loss += loss.item()
+    #         train_loss_class[idx]+=loss.item()
 
-    #     # forward
-    #     class_targets = []
-    #     for j in range(targets.shape[0]):
-    #         li = []
-    #         li.append(targets[j][4])
-    #         class_targets.append(li)
-    #     class_targets = torch.tensor(class_targets).to(device)
-        
-    #     pred = model(images, 4)
-    #     # loss
-    #     loss = criterion(pred.double(), class_targets)
-    #     train_loss += loss.item()
-    #     train_loss_class[4]+=loss.item()
+    #         loss.backward()
+    #         total_optimizer.step()
 
-    #     loss.backward()
-    #     total_optimizer.step()
+    # total_train_loss = (train_loss / (20+4)) / train_iter
 
-
+    total_train_loss = (train_loss / (20)) / train_iter
     total_scheduler.step()
-    # for index in range(20):
-    #     # scheduler_li[index].step()
-    #     if(index==4):
-    #         train_loss_class[index]/=(train_iter+len(train_hard_loader[4]))
-    #     else:
-    #         train_loss_class[index]/=train_iter
-        # print(VOC_CLASSES[index] + " : " + str(train_loss_class[index]))
-
-    total_train_loss = (train_loss / (20+1)) / train_iter
 
     with torch.no_grad():
         for images, targets in valid_loader:
@@ -175,12 +165,8 @@ for e in range(EPOCH):
                 # loss
                 loss = criterion(pred.double(), class_targets)
                 valid_loss += loss.item()
-                # valid_loss_class[idx] += loss.item()
 
     total_valid_loss = (valid_loss /20) / valid_iter
-    # for index in range(20):
-    #     valid_loss_class[index]/=valid_iter
-        # print(VOC_CLASSES[index] + " : " + str(valid_loss_class[index]))
 
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
 

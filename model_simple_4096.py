@@ -27,124 +27,124 @@ class VGG(nn.Module):
         self.features = features
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         self.classifier0 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier1 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier2 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier3 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier4 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier5 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier6 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier7 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier8 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier9 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier10 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier11 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier12 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier13 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier14 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier15 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier16 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier17 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier18 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         self.classifier19 = nn.Sequential(
-            nn.Linear(512 * 7 * 7, 1024),
+            nn.Linear(512 * 7 * 7, 2048),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, num_classes),
+            nn.Linear(2048, num_classes),
         )
         if init_weights:
             self._initialize_weights()
