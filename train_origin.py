@@ -63,6 +63,7 @@ train_iter = len(train_loader)
 valid_iter = len(valid_loader)
 
 for e in range(EPOCH):
+    print("epoch : "+str(e))
     train_loss = 0
     valid_loss = 0
 
