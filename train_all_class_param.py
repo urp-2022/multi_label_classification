@@ -7,7 +7,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from model import vgg16
 import torchvision.transforms as transforms
-from datasets.loader import VOC
+from datasets.loader_custom import VOC
 from torchvision import models
 
 VOC_CLASSES = (

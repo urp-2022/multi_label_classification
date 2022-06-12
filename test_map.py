@@ -7,7 +7,7 @@ import time
 from torchvisionModels import vgg16
 
 from PIL import Image
-from datasets.loader import VOC
+from datasets.loader_custom import VOC
 
 from helper_functions import mAP, AverageMeter, CocoDetection
 

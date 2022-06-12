@@ -41,8 +41,16 @@ class VocDataset(data.Dataset):
         '''
         type_file = dataType + '.txt'
 
-        with open(os.path.join(os.path.join(path, 'ImageSets/Main'), type_file), 'r') as f:
-            file_names = [x.strip() for x in f.readlines()]
+        if type_file=='person_train.txt':
+            file_names = []
+            with open(os.path.join(os.path.join(path, 'ImageSets/Main'), type_file), 'r') as f:
+                for x in f.readlines():
+                    tmp=x.split(" ")
+                    if tmp[1]!='-1':
+                        file_names.append(tmp[0].strip())
+        else:
+            with open(os.path.join(os.path.join(path, 'ImageSets/Main'), type_file), 'r') as f:
+                file_names = [x.strip() for x in f.readlines()]
 
         self.imgs = [os.path.join(os.path.join(path, 'JPEGImages'), x + '.jpg') for x in file_names]
         self.anns = [os.path.join(os.path.join(path, 'Annotations'), x + '.xml') for x in file_names]
@@ -54,6 +62,7 @@ class VocDataset(data.Dataset):
         '''
         :param
             index : index
+
         :return
             img : (numpy Image)
             target : (numpy) [class_id]
@@ -90,4 +99,3 @@ class VocDataset(data.Dataset):
 
         #scaling_res = scaling(res)
         return res
-        
