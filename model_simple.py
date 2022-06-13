@@ -30,181 +30,121 @@ class VGG(nn.Module):
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier1 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier2 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier3 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier4 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier5 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier6 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier7 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier8 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier9 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier10 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier11 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier12 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier13 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier14 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier15 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier16 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier17 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier18 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         self.classifier19 = nn.Sequential(
             nn.Linear(512 * 7 * 7, 1024),
             nn.ReLU(True),
             nn.Dropout(),
-            nn.Linear(1024, 256),
-            nn.ReLU(True),
-            nn.Dropout(),
-            nn.Linear(256, num_classes),
+            nn.Linear(1024, num_classes),
         )
         if init_weights:
             self._initialize_weights()
@@ -353,6 +293,7 @@ def vgg13(pretrained=False, progress=True, **kwargs):
 def vgg16(pretrained=False, progress=True, **kwargs):
     r"""VGG 16-layer model (configuration "D")
     `"Very Deep Convolutional Networks For Large-Scale Image Recognition" <https://arxiv.org/pdf/1409.1556.pdf>`_
+
     Args:
         pretrained (bool): If True, returns a model pre-trained on ImageNet
         progress (bool): If True, displays a progress bar of the download to stderr
