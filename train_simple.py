@@ -77,7 +77,7 @@ for i, (name, param) in enumerate(model.features.named_parameters()):
 
 total_optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
-                                        milestones=[1, 5, 15, 40, 80],
+                                        milestones=[1, 5, 15, 20, 40, 60, 80],
                                         gamma=0.1)
 
 criterion = nn.BCEWithLogitsLoss()
