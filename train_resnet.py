@@ -107,13 +107,15 @@ for e in range(EPOCH):
             # loss
             loss = criterion(pred.double(), class_targets)
             train_loss += loss.item()
-            if(idx==0):
-                train_total_loss = loss
-            else:
-                train_total_loss += loss
+            loss.backward()
+            total_optimizer.step()
+            # if(idx==0):
+            #     train_total_loss = loss
+            # else:
+            #     train_total_loss += loss
 
-        train_total_loss.backward()
-        total_optimizer.step()
+        # train_total_loss.backward()
+        # total_optimizer.step()
 
     # for idx in aug_class_list:        
     #     for i, (images, targets) in tqdm(enumerate(train_hard_loader[idx]), total=len(train_hard_loader[idx])):
