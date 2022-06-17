@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
-from model_origin_simple import vgg16
+from model_origin_resnet import resnet34
 import torchvision.transforms as transforms
 from datasets.loader import VOC
 
@@ -41,18 +41,12 @@ train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
 valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
 
 # load model
-model = vgg16(pretrained=True).to(device)
+model = resnet34(pretrained=True).to(device)
 
-# VOC num class 20
-# model.classifier[6] = nn.Sequential([nn.Linear(4096, 20), nn.Sigmoid()])
-# model.classifier[6] = nn.Linear(256, 20)
 
-# Freezing
-for i, (name, param) in enumerate(model.features.named_parameters()):
-    param.requires_grad = False
 
 # Momentum / L2 panalty
-optimizer = optim.SGD(model.classifier.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
+optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer,
                                            milestones=[30, 80],
                                            gamma=0.1)
@@ -67,7 +61,6 @@ for e in range(EPOCH):
     train_loss = 0
     valid_loss = 0
 
-    scheduler.step()
 
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
         images = images.to(device)
@@ -87,6 +80,7 @@ for e in range(EPOCH):
         # weight update
         optimizer.step()
 
+    scheduler.step()
     total_train_loss = train_loss / train_iter
 
     with torch.no_grad():

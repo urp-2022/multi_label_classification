@@ -54,7 +54,7 @@ for i, (name, param) in enumerate(model.features.named_parameters()):
 # Momentum / L2 panalty
 optimizer = optim.SGD(model.classifier.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer=optimizer,
-                                           milestones=[50, 100, 150],
+                                           milestones=[30, 80],
                                            gamma=0.1)
 criterion = nn.BCEWithLogitsLoss()
 
@@ -107,14 +107,7 @@ for e in range(EPOCH):
     print("[train loss / %f] [valid loss / %f]" % (total_train_loss, total_valid_loss))
 
     if best_loss > total_valid_loss:
-        print("model saved")
+        print("model saved\n")
         torch.save(model.state_dict(), 'model_origin.h5')
         best_loss = total_valid_loss
 
-"""
-from utils import save_tensor_image
-for image, targets in train_loader:
-    save_tensor_image(image[0])
-    print(targets)
-    break
-"""

@@ -56,9 +56,7 @@ for i in range(len(VOC_CLASSES)):
     ))
 
 # load model
-# model = vgg11(pretrained=True).to(device)
 model = resnet34(pretrained=True).to(device)
-# model = vgg19(pretrained=True).to(device)
 model_dict = model.state_dict()
 
 print("our model")
@@ -72,7 +70,7 @@ print(model_dict.keys())
 #                                         gamma=0.1)
 total_optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
 total_scheduler = optim.lr_scheduler.MultiStepLR(optimizer=total_optimizer,
-                                        milestones=[2, 5, 15, 25, 40, 80],
+                                        milestones=[2, 4, 10, 15, 25, 35, 50, 65, 80],
                                         gamma=0.1)
 
 criterion = nn.BCEWithLogitsLoss()
@@ -117,31 +115,31 @@ for e in range(EPOCH):
         train_total_loss.backward()
         total_optimizer.step()
 
-    for idx in aug_class_list:        
-        for i, (images, targets) in tqdm(enumerate(train_hard_loader[idx]), total=len(train_hard_loader[idx])):
-            total_optimizer.zero_grad()
-            images = images.to(device)
-            targets = targets.to(device)
+    # for idx in aug_class_list:        
+    #     for i, (images, targets) in tqdm(enumerate(train_hard_loader[idx]), total=len(train_hard_loader[idx])):
+    #         total_optimizer.zero_grad()
+    #         images = images.to(device)
+    #         targets = targets.to(device)
 
-            # forward
-            class_targets = []
-            for j in range(targets.shape[0]):
-                li = []
-                li.append(targets[j][idx])
-                class_targets.append(li)
-            class_targets = torch.tensor(class_targets).to(device)
+    #         # forward
+    #         class_targets = []
+    #         for j in range(targets.shape[0]):
+    #             li = []
+    #             li.append(targets[j][idx])
+    #             class_targets.append(li)
+    #         class_targets = torch.tensor(class_targets).to(device)
             
-            pred = model(images, idx)
-            # loss
-            loss = criterion(pred.double(), class_targets)
-            train_loss += loss.item()
+    #         pred = model(images, idx)
+    #         # loss
+    #         loss = criterion(pred.double(), class_targets)
+    #         train_loss += loss.item()
 
-            loss.backward()
-            total_optimizer.step()
+    #         loss.backward()
+    #         total_optimizer.step()
 
-    total_train_loss = (train_loss / (20+4)) / train_iter
+    # total_train_loss = (train_loss / (20+4)) / train_iter
 
-    # total_train_loss = (train_loss / (20)) / train_iter
+    total_train_loss = (train_loss / (20)) / train_iter
     total_scheduler.step()
 
     with torch.no_grad():
