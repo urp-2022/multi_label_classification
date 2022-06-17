@@ -82,7 +82,7 @@ valid_iter = len(valid_loader)
 model = model.to(device)
 model.train()
 
-aug_class_list = [4, 9, 15, 16]
+aug_class_list = [4, 15, 17]
 
 for e in range(EPOCH):
     print("epoch : "+str(e))
@@ -90,12 +90,13 @@ for e in range(EPOCH):
     valid_loss = 0
     
     for i, (images, targets) in tqdm(enumerate(train_loader), total=train_iter):
-        total_optimizer.zero_grad()
         images = images.to(device)
         targets = targets.to(device)
 
         # forward
         for idx in range(20):
+            total_optimizer.zero_grad()
+
             class_targets = []
             for j in range(targets.shape[0]):
                 li = []
@@ -109,13 +110,6 @@ for e in range(EPOCH):
             train_loss += loss.item()
             loss.backward()
             total_optimizer.step()
-            # if(idx==0):
-            #     train_total_loss = loss
-            # else:
-            #     train_total_loss += loss
-
-        # train_total_loss.backward()
-        # total_optimizer.step()
 
     # for idx in aug_class_list:        
     #     for i, (images, targets) in tqdm(enumerate(train_hard_loader[idx]), total=len(train_hard_loader[idx])):
