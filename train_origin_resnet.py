@@ -6,7 +6,7 @@ import torch.optim as optim
 from tqdm import tqdm
 from model_origin_resnet import resnet34
 import torchvision.transforms as transforms
-from datasets.loader import VOC
+from datasets.loader_custom_v2 import VOC
 
 VOC_CLASSES = (
     'aeroplane', 'bicycle', 'bird', 'boat',
@@ -19,16 +19,12 @@ MODEL_PATH = 'model_origin.h5'
 BATCH_SIZE = 16
 EPOCH = 100
 
-# if torch.cuda.is_available():
-#     device = 'cuda'
-#     # torch.set_default_tensor_type('torch.cuda.FloatTensor')
-# else:
-#     device = 'cpu'
-#     # torch.set_default_tensor_type('torch.FloatTensor')
 ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
 # augmentation
+voc = VOC(batch_size=BATCH_SIZE, year="2007")
+
 train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
@@ -36,14 +32,29 @@ train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
 valid_transformer = transforms.Compose([transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
-voc = VOC(batch_size=BATCH_SIZE, year="2007")
-train_loader = voc.get_loader(transformer=train_transformer, datatype='train')
-valid_loader = voc.get_loader(transformer=valid_transformer, datatype='val')
+train_loader = voc.get_loader(
+    transformer=train_transformer, 
+    datatype='train',
+    classtype=-1)
+valid_loader = voc.get_loader(
+    transformer=valid_transformer, 
+    datatype='val',
+    classtype=-1)
+
+
+train_transformer_hard = transforms.Compose([transforms.RandomRotation(90),
+                                        transforms.Resize((224, 224)),
+                                        transforms.ToTensor(),])
+train_hard_loader = []
+for i in range(len(VOC_CLASSES)):
+    train_hard_loader.append(voc.get_loader(
+        transformer=train_transformer_hard,
+        datatype='train',
+        classtype=i
+    ))
 
 # load model
 model = resnet34(pretrained=True).to(device)
-
-
 
 # Momentum / L2 panalty
 optimizer = optim.SGD(model.parameters(), lr=0.001, weight_decay=1e-5, momentum=0.9)
@@ -55,6 +66,9 @@ criterion = nn.BCEWithLogitsLoss()
 best_loss = 100
 train_iter = len(train_loader)
 valid_iter = len(valid_loader)
+
+
+aug_class_list = [4, 15, 17]
 
 for e in range(EPOCH):
     print("epoch : "+str(e))
@@ -80,8 +94,25 @@ for e in range(EPOCH):
         # weight update
         optimizer.step()
 
+
+    for idx in aug_class_list:        
+        for i, (images, targets) in tqdm(enumerate(train_hard_loader[idx]), total=len(train_hard_loader[idx])):
+            optimizer.zero_grad()
+            images = images.to(device)
+            targets = targets.to(device)
+
+            # forward            
+            pred = model(images)
+            # loss
+            loss = criterion(pred.double(), targets)
+            train_loss += loss.item()
+            loss.backward()
+            optimizer.step()
+
+    total_train_loss = (train_loss / len(aug_class_list)) / train_iter
+
+    # total_train_loss = train_loss / train_iter
     scheduler.step()
-    total_train_loss = train_loss / train_iter
 
     with torch.no_grad():
         for images, targets in valid_loader:
