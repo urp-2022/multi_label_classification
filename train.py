@@ -133,4 +133,4 @@ for e in range(EPOCH):
     if best_loss > total_valid_loss:
         best_loss = total_valid_loss
         print("model saved\n")
-        torch.save(model.state_dict(), 'model_aug.h5')
+        torch.save(model.state_dict(), 'model.h5')
