@@ -46,6 +46,24 @@ def average_precision(output, target):
     return precision_at_i
 
 
+# def mAP(targs, preds):
+#     """Returns the model's average precision for each class
+#     Return:
+#         ap (FloatTensor): 1xK tensor, with avg precision for each class k
+#     """
+
+#     if np.size(preds) == 0:
+#         return 0
+#     ap = np.zeros((preds.shape[1]))
+#     # compute average precision for each class
+#     for k in range(preds.shape[1]):
+#         # sort scores
+#         scores = preds[:, k]
+#         targets = targs[:, k]
+#         # compute average precision
+#         ap[k] = average_precision(scores, targets)
+#     return 100 * ap.mean()
+
 def mAP(targs, preds):
     """Returns the model's average precision for each class
     Return:
@@ -62,8 +80,7 @@ def mAP(targs, preds):
         targets = targs[:, k]
         # compute average precision
         ap[k] = average_precision(scores, targets)
-    return 100 * ap.mean()
-
+    return ap
 
 class AverageMeter(object):
     def __init__(self):
@@ -195,4 +212,3 @@ def add_weight_decay(model, weight_decay=1e-4, skip_list=()):
     return [
         {'params': no_decay, 'weight_decay': 0.},
         {'params': decay, 'weight_decay': weight_decay}]
-        

@@ -107,7 +107,8 @@ for e in range(EPOCH):
         # forward
         for idx in range(20):
             if(idx not in aug_class_list):
-
+                # print("=========")
+                # print(idx)
                 class_targets = []
                 for j in range(targets.shape[0]):
                     li = []
@@ -125,6 +126,9 @@ for e in range(EPOCH):
                 total_optimizer.step()
 
     for idx in range(len(aug_class_list)):        
+        print("=========")
+        print(idx)
+        print(aug_class_list[idx])
         for i, (images, targets) in tqdm(enumerate(train_hard_loader[idx]), total=len(train_hard_loader[idx])):
             images = images.to(device)
             targets = targets.to(device)

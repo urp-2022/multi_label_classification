@@ -50,7 +50,7 @@ class VocDataset(data.Dataset):
             with open(os.path.join(os.path.join(path, 'ImageSets/Main'), type_file), 'r') as f:
                 for x in f.readlines():
                     tmp=x.split(" ")
-                    if tmp[1]!='-1':
+                    if '-1' not in tmp[1]:
                         file_names.append(tmp[0].strip())
         
         self.imgs = [os.path.join(os.path.join(path, 'JPEGImages'), x + '.jpg') for x in file_names]
