@@ -18,7 +18,7 @@ VOC_CLASSES = (
 )
 MODEL_PATH = 'model.h5'
 BATCH_SIZE = 16
-EPOCH = 200
+EPOCH = 100
 
 
 ctx = "cuda" if torch.cuda.is_available() else "cpu"

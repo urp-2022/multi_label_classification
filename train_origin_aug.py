@@ -4,6 +4,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from tqdm import tqdm
+import torchvision.transforms.functional as TF
 from model_origin_resnet import resnet34
 import torchvision.transforms as transforms
 from datasets.loader_custom_v3 import VOC
@@ -23,7 +24,7 @@ ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
 # augmentation
-voc = VOC(batch_size=BATCH_SIZE, year1="2007")
+voc = VOC(batch_size=BATCH_SIZE, year="2007")
 
 train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         transforms.Resize((224, 224)),
@@ -32,7 +33,8 @@ train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
 valid_transformer = transforms.Compose([transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
-train_transformer_hard = transforms.Compose([transforms.RandomRotation(90),
+train_transformer_hard = transforms.Compose([transforms.RandomAutocontrast(1),
+                                        transforms.ColorJitter(brightness=.5, hue=.3),
                                         transforms.Resize((224, 224)),
                                         transforms.ToTensor(),])
 
@@ -43,6 +45,7 @@ train_transformer_hard = transforms.Compose([transforms.RandomRotation(90),
 #     augClassList=[]
 # )
 
+# print("--valid loader--")
 valid_loader = voc.get_loader(
     base_transformer=valid_transformer, 
     hard_transformer=train_transformer_hard,
@@ -50,7 +53,9 @@ valid_loader = voc.get_loader(
     augClassList=[]
 )
 
-aug_class_list = [4, 15, 17]
+# print("--train hard loader--")
+# aug_class_list = [4, 15, 17]
+aug_class_list = [4]
 train_hard_loader = voc.get_loader(
     base_transformer=train_transformer,
     hard_transformer=train_transformer_hard,

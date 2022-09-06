@@ -40,6 +40,9 @@ class VocDataset(data.Dataset):
             transform: augmentation lib : [img], custom : [img, target]
             target_transform: augmentation [target]
         '''
+        # print("==============VocDataset==============")
+        # print(classType)
+
         if(classType==-1):
             type_file = dataType + '.txt'
             with open(os.path.join(os.path.join(path, 'ImageSets/Main'), type_file), 'r') as f:
@@ -52,6 +55,10 @@ class VocDataset(data.Dataset):
                     tmp=x.split(" ")
                     if '-1' not in tmp[1]:
                         file_names.append(tmp[0].strip())
+
+        # print(type_file)
+        # print(len(file_names))
+
         self.imgs = [os.path.join(os.path.join(path, 'JPEGImages'), x + '.jpg') for x in file_names]
         self.anns = [os.path.join(os.path.join(path, 'Annotations'), x + '.xml') for x in file_names]
         self.transformer = transformer

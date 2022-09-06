@@ -77,11 +77,21 @@ class VOC(object):
                         transformer=base_transformer,
                         classType=-1) 
         
+        # print(len(custom_dataset))
+
         for i in range(len(augClassList)):
             custom_dataset += VocDataset(path,
                             dataType=datatype,
                             transformer=hard_transformer,
                             classType=augClassList[i])
+
+        # print(len(custom_dataset))
+
+        # for i in range(len(augClassList)):
+        #     custom_dataset = torch.utils.data.ConcatDataset([VocDataset(path, dataType=datatype, transformer=hard_transformer, classType=augClassList[i])
+        #                                                     ,custom_dataset])
+
+
 
         custom_loader = torch.utils.data.DataLoader(
             dataset=custom_dataset,

@@ -23,7 +23,7 @@ ctx = "cuda" if torch.cuda.is_available() else "cpu"
 device = torch.device(ctx)
 
 # augmentation
-voc = VOC(batch_size=BATCH_SIZE, year1="2007")
+voc = VOC(batch_size=BATCH_SIZE, year="2007")
 
 train_transformer = transforms.Compose([transforms.RandomHorizontalFlip(),
                                         transforms.Resize((224, 224)),
